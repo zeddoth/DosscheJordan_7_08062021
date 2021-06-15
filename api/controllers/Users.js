@@ -104,16 +104,16 @@ exports.deleteUser = (req, res) => {
 // Ont complète le profile par son ID
 exports.editUser = (req, res) => {
   const paramsId = req.params.id;
-  db.Users.updateOne({
-    where: { id: paramsId },
+  const edit = {
     email: req.body.email,
     lastName: req.body.lastName,
     firstName: req.body.firstName,
     job: req.body.job,
     birthday: req.body.birthday,
-  })
+  };
+  db.Users.update(edit, { where: { id: paramsId } })
     .then(() => {
-      res.status(201).send({ message: "Utilisateur modifié avec succés !" });
+      res.status(201).send({ message: "Utilisateur modifié avec succès !" });
     })
     .catch(() => {
       res.status(400).send({ message: "Utilisateur non modifié suite à une erreur" });
