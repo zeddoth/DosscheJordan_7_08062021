@@ -1,16 +1,16 @@
-// Les imports
-let express = require("express");
+const express = require("express");
+const app = express();
+const db = require("./models");
+require("dotenv").config();
+const PORT = process.env.PORT || 3000;
 
-// Instansation de notre serveur
-let server = express();
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
-// Paramètrage des routes
-server.get("/", function (req, res) {
-  res.setHeader("Content-Type", "text/html");
-  res.status(200).send("<h1>Bonjour sur mon serveur</h1>");
-});
+require("./routes/router")(app);
 
-// Lancement du serveur
-server.listen(8080, function () {
-  console.log("Status du serveur : ON");
+db.sequelize.sync().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Serveur ON: http://localhost:${PORT}`);
+  });
 });

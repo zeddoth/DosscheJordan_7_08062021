@@ -1,5 +1,3 @@
-"use strict";
-
 const fs = require("fs");
 const path = require("path");
 const Sequelize = require("sequelize");
@@ -32,5 +30,10 @@ Object.keys(db).forEach((modelName) => {
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
+
+// RESET DES TABLES (A RETIRER A LA FIN)
+// db.sequelize.sync({ force: true }).then(() => {
+//   console.log("DROP des tables et resync");
+// });
 
 module.exports = db;
