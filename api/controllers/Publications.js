@@ -49,15 +49,16 @@ exports.getPublicationByAuthor = (req, res) => {
 
 // Ont récupère une publication par son ID
 exports.getOnePublication = (req, res) => {
-  const id = req.params.id;
-  db.Publications.findByPk(id)
+  const paramsId = req.params.id;
+  db.Publications.findByPk(paramsId)
     .then((data) => {
       res.send(data);
     })
-    .catch((err) => {
+    .catch(() => {
       res.status(500).send({
         message:
-          "Une erreur à été rencontré lors de la récupération de la publication avec l'id=" + id,
+          "Une erreur à été rencontré lors de la récupération de la publication avec l'id=" +
+          paramsId,
       });
     });
 };

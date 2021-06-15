@@ -5,6 +5,7 @@ module.exports = (app) => {
 
   router.post("/login", userController.login);
   router.post("/signup", userController.signup);
+  router.get("/profile/:id", userController.getUser);
   router.delete("/profile/:id", userController.deleteUser);
   router.put("/profile/:id", userController.editUser);
 

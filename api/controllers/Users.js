@@ -119,3 +119,18 @@ exports.editUser = (req, res) => {
       res.status(400).send({ message: "Utilisateur non modifié suite à une erreur" });
     });
 };
+
+// Ont récupère les information du profile par son ID
+exports.getUser = (req, res) => {
+  const paramsId = req.params.id;
+  db.Users.findByPk(paramsId)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch(() => {
+      res.status(500).send({
+        message:
+          "Une erreur à été rencontré lors de la récupération du profil avec l'id=" + paramsId,
+      });
+    });
+};
