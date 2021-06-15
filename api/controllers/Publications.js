@@ -7,13 +7,11 @@ exports.createPublication = (req, res) => {
     res.status(400).send({
       message: "Le champ 'Titre' ne peut pas être vide",
     });
-    return;
   }
   if (!req.body.content) {
     res.status(400).send({
       message: "Le champ 'Contenu' ne peut pas être vide",
     });
-    return;
   }
   // Ont sauvegarde une publication
   db.Publications.create({
@@ -107,7 +105,7 @@ exports.deleteAll = (req, res) => {
     truncate: false,
   })
     .then((nums) => {
-      res.send({ message: `${nums} publications ont été supprimé` });
+      res.status(200).send({ message: `${nums} publications ont été supprimé` });
     })
     .catch((err) => {
       res.status(500).send({

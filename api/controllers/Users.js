@@ -103,6 +103,17 @@ exports.deleteUser = (req, res) => {
 
 // Ont complète le profile par son ID
 exports.editUser = (req, res) => {
+  if (
+    !req.body.email &&
+    !req.body.lastName &&
+    !req.body.firstName &&
+    !req.body.job &&
+    !req.body.birthday
+  ) {
+    res.status(400).send({
+      message: "Les champs ne peuvent pas être vide",
+    });
+  }
   const paramsId = req.params.id;
   const edit = {
     email: req.body.email,
