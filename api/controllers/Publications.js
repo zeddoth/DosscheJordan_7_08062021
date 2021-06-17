@@ -1,15 +1,16 @@
 const db = require("../models");
+const getIdUser = require("../utils/decodeToken");
 
 // Ont créer une publication
 exports.createPublication = (req, res) => {
   // Ont valide la requête
   if (!req.body.title) {
-    res.status(400).send({
+    res.status(404).send({
       message: "Le champ 'Titre' ne peut pas être vide",
     });
   }
   if (!req.body.content) {
-    res.status(400).send({
+    res.status(404).send({
       message: "Le champ 'Contenu' ne peut pas être vide",
     });
   }
@@ -17,14 +18,14 @@ exports.createPublication = (req, res) => {
   db.Publications.create({
     title: req.body.title,
     content: req.body.content,
-    UserId: req.body.UserId,
+    UserId: getIdUser(req),
   })
     .then((data) => {
       res.send(data);
     })
     .catch((err) => {
       res.status(500).send({
-        message: err.message || "Some error occurred while creating the Tutorial.",
+        message: err.message || "Une erreur à été rencontré lors de la création de la publication",
       });
     });
 };
@@ -32,7 +33,16 @@ exports.createPublication = (req, res) => {
 // Ont récupère les publications par l'ID de l'auteur
 exports.getPublicationByAuthor = (req, res) => {
   const authorID = req.params.UserId;
-  db.Publications.findAll({ where: authorID })
+  db.Publications.findAll({
+    where: authorID,
+    order: [["createdAt", "DESC"]],
+    include: [
+      {
+        model: db.Users,
+        attributes: ["username"],
+      },
+    ],
+  })
     .then((data) => {
       res.send(data);
     })
@@ -48,7 +58,27 @@ exports.getPublicationByAuthor = (req, res) => {
 // Ont récupère une publication par son ID
 exports.getOnePublication = (req, res) => {
   const paramsId = req.params.id;
-  db.Publications.findByPk(paramsId)
+  db.Publications.findByPk(paramsId, {
+    order: [[db.Comments, "createdAt", "DESC"]],
+    where: { PublicationId: req.body.PublicationId },
+    include: [
+      {
+        model: db.Users,
+        attributes: ["username"],
+      },
+      {
+        model: db.Comments,
+        attributes: ["content", "createdAt", "UserId"],
+        //
+        include: [
+          {
+            model: db.Users,
+            attributes: ["username"],
+          },
+        ],
+      },
+    ],
+  })
     .then((data) => {
       res.send(data);
     })
@@ -60,9 +90,18 @@ exports.getOnePublication = (req, res) => {
       });
     });
 };
+
 // Ont récupère toutes les publications disponnibles en base de données
 exports.getAllPublications = (req, res) => {
-  db.Publications.findAll()
+  db.Publications.findAll({
+    order: [["createdAt", "DESC"]],
+    include: [
+      {
+        model: db.Users,
+        attributes: ["username"],
+      },
+    ],
+  })
     .then((data) => {
       res.send(data);
     })
@@ -86,12 +125,12 @@ exports.deleteOnePublication = (req, res) => {
           message: "La publication à été supprimer avec succès!",
         });
       } else {
-        res.status(401).send({
+        res.status(404).send({
           message: `La publication avec l'id=${paramsId} ne peut être supprimer. Peut-être que la publication n'a pas été trouvé!`,
         });
       }
     })
-    .catch((err) => {
+    .catch(() => {
       res.status(500).send({
         message: "La publication avec l'id=" + paramsId + "n'a pas plus être supprimer",
       });

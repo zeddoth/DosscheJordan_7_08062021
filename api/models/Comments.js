@@ -21,5 +21,11 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: DataTypes.NOW,
     },
   });
+
+  Comments.associate = (models) => {
+    Comments.belongsTo(models.Publications);
+    Comments.belongsTo(models.Users);
+  };
+
   return Comments;
 };
