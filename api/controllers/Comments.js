@@ -69,6 +69,26 @@ exports.deleteComment = (req, res) => {
     });
 };
 
+// ADMIN
+// Ont supprimer les commentaires d'une publication
+exports.AdminDeleteAllComments = (req, res) => {
+  const PublicationId = req.params.PublicationId;
+  db.Comments.destroy({
+    where: { PublicationId: PublicationId },
+    truncate: false,
+  })
+    .then((nums) => {
+      res.status(200).send({ message: `${nums} commentaires ont été supprimés` });
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message:
+          err.message || "Une erreur à été rencontré lors de la suppresions des commentaires",
+      });
+    });
+};
+
+// Ont supprime un commentaire par son ID
 exports.adminDeleteComment = (req, res) => {
   const paramsId = req.params.id;
   db.Comments.destroy({ where: { id: paramsId } })
@@ -86,24 +106,6 @@ exports.adminDeleteComment = (req, res) => {
     .catch((err) => {
       res.status(500).send({
         message: "Le commentaire avec l'id=" + paramsId + "n'a pas pu être supprimer",
-      });
-    });
-};
-
-// Ont supprimer les commentaires d'une publication
-exports.deleteAllComments = (req, res) => {
-  const PublicationId = req.params.PublicationId;
-  db.Comments.destroy({
-    where: { PublicationId: PublicationId },
-    truncate: false,
-  })
-    .then((nums) => {
-      res.status(200).send({ message: `${nums} commentaires ont été supprimés` });
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message:
-          err.message || "Une erreur à été rencontré lors de la suppresions des commentaires",
       });
     });
 };

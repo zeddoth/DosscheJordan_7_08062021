@@ -118,6 +118,7 @@ exports.deleteOnePublication = (req, res) => {
   const paramsId = req.params.id;
   db.Publications.destroy({
     where: { id: paramsId },
+    UserId: getIdUser(req),
   })
     .then((num) => {
       if (num == 1) {
@@ -137,8 +138,10 @@ exports.deleteOnePublication = (req, res) => {
     });
 };
 
+// ADMIN
+
 // Ont supprime toutes les publications disponnibles en BDD
-exports.deleteAll = (req, res) => {
+exports.AdminDeleteAll = (req, res) => {
   db.Publications.destroy({
     where: {},
     truncate: false,
@@ -150,6 +153,30 @@ exports.deleteAll = (req, res) => {
       res.status(500).send({
         message:
           err.message || "Une erreur à été rencontré lors de la suppresions des publications",
+      });
+    });
+};
+
+// Ont supprime une publication par son ID
+exports.AdminDeleteOnePublication = (req, res) => {
+  const paramsId = req.params.id;
+  db.Publications.destroy({
+    where: { id: paramsId },
+  })
+    .then((num) => {
+      if (num == 1) {
+        res.status(200).send({
+          message: "La publication à été supprimer avec succès!",
+        });
+      } else {
+        res.status(404).send({
+          message: `La publication avec l'id=${paramsId} ne peut être supprimer. Peut-être que la publication n'a pas été trouvé!`,
+        });
+      }
+    })
+    .catch(() => {
+      res.status(500).send({
+        message: "La publication avec l'id=" + paramsId + "n'a pas plus être supprimer",
       });
     });
 };

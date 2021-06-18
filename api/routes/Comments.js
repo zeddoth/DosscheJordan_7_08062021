@@ -8,9 +8,14 @@ module.exports = (app) => {
   router.get("/comments/:id", auth, commentController.getComments);
   router.post("/comments/:PublicationId", auth, commentController.createComment);
   router.delete("/comments/:id", auth, commentController.deleteComment);
-  router.delete("/comments/:PublicationId/all", auth, commentController.deleteAllComments);
 
   //ROUTES ADMIN
+  router.delete(
+    "admin/comments/:PublicationId/all",
+    auth,
+    isAdmin,
+    commentController.AdminDeleteAllComments
+  );
   router.delete("/admin/comments/:id", auth, isAdmin, commentController.adminDeleteComment);
 
   app.use("/api", router);

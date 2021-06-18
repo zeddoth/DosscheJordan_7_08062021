@@ -1,9 +1,9 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const db = require("../models");
-const fs = require("fs");
 require("dotenv").config();
 const randomToken = process.env.TOKEN;
+const getIdUser = require("../utils/decodeToken");
 
 // Ont enregistre un compte
 exports.signup = (req, res) => {
@@ -83,9 +83,8 @@ exports.login = (req, res) => {
 
 // Ont supprime l'utilisateur par son ID
 exports.deleteUser = (req, res) => {
-  const paramsId = req.params.id;
   db.Users.destroy({
-    where: { id: paramsId },
+    where: { id: getIdUser(req) },
   })
     .then((num) => {
       if (num == 1) {
@@ -121,7 +120,6 @@ exports.editUser = (req, res) => {
       message: "Un ou plusieurs champs sont vide",
     });
   }
-  const paramsId = req.params.id;
   const edit = {
     email: req.body.email,
     lastName: req.body.lastName,
@@ -129,7 +127,7 @@ exports.editUser = (req, res) => {
     job: req.body.job,
     birthday: req.body.birthday,
   };
-  db.Users.update(edit, { where: { id: paramsId } })
+  db.Users.update(edit, { where: { id: getIdUser(req) } })
     .then(() => {
       res.status(201).send({ message: "Utilisateur modifié avec succès !" });
     })
@@ -143,11 +141,10 @@ exports.editPassword = (req, res) => {
   if (!req.body.password) {
     res.status(400).send({ message: "Le champ 'mot de passe' ne peut pas être vide" });
   }
-  const paramsId = req.params.id;
   bcrypt
     .hash(req.body.password, 10)
     .then((hash) => {
-      db.Users.update({ password: hash }, { where: { id: paramsId } });
+      db.Users.update({ password: hash }, { where: { id: getUserId(req) } });
     })
     .then(() => {
       res.status(201).send({ message: "Mot de passe modifié avec succès" });
@@ -159,31 +156,17 @@ exports.editPassword = (req, res) => {
     });
 };
 
-// Ont modifie le role de l'utilisateur (admin / user)
-exports.editRole = (req, res) => {
-  const paramsId = req.params.id;
-  if (!req.body.roles) {
-    res.status(400).send({
-      message: "Le rôle ne peut être vide, veuillez renseigner le role par admin ou user",
-    });
-  }
-  db.Users.update({ roles: req.body.roles }, { where: { id: paramsId } })
-    .then(() => {
-      res.status(201).send({ message: "Rôle de l'utilisateur modifié avec succès !" });
-    })
-    .catch(() => {
-      res.status(500).send({ message: "Rôle de l'utilisateur non modifié suite à une erreur" });
-    });
-};
-
 // Ont modifie l'image de profile de l'utilisateur
 exports.editProfileImage = (req, res) => {
   if (!profileImage) {
     res.status(404).send({ message: "Image manquante lors de l'envoie" });
   }
-  db.Users.update({
-    profileImage: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`,
-  });
+  db.Users.update(
+    {
+      profileImage: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`,
+    },
+    { where: { id: getIdUser(req) } }
+  );
 };
 
 // Ont récupère les information du profile par son ID
@@ -212,5 +195,51 @@ exports.getAllUsers = (req, res) => {
       res
         .status(500)
         .send({ message: "Une erreur à été rencontré lors de la récupérations des utilisateurs" });
+    });
+};
+
+// ADMIN
+
+// Ont modifie le role de l'utilisateur (admin / user)
+exports.AdminEditRole = (req, res) => {
+  const paramsId = req.params.id;
+  if (!req.body.roles) {
+    res.status(400).send({
+      message: "Le rôle ne peut être vide, veuillez renseigner le role par admin ou user",
+    });
+  }
+  db.Users.update({ roles: req.body.roles }, { where: { id: paramsId } })
+    .then(() => {
+      res.status(201).send({ message: "Rôle de l'utilisateur modifié avec succès !" });
+    })
+    .catch(() => {
+      res.status(500).send({ message: "Rôle de l'utilisateur non modifié suite à une erreur" });
+    });
+};
+
+// Ont supprime l'utilisateur par son ID
+exports.AdminDeleteUser = (req, res) => {
+  const paramsId = req.params.id;
+  db.Users.destroy({
+    where: { id: paramsId },
+  })
+    .then((num) => {
+      if (num == 1) {
+        res.status(200).send({
+          message: "L'utilisateur à été supprimer avec succès!",
+        });
+      } else {
+        res.status(404).send({
+          message:
+            "L'utilisateur avec l'id= " +
+            paramsId +
+            " n'a pas plus être supprimer, peut être qu'il n'existe pas",
+        });
+      }
+    })
+    .catch(() => {
+      res.status(500).send({
+        message: "L'utilisateur avec l'id=" + paramsId + "n'a pas plus être supprimer",
+      });
     });
 };
