@@ -10,6 +10,8 @@ module.exports = (app) => {
   router.post("/posts", auth, publicationController.createPublication);
   router.delete("/posts/:id", auth, publicationController.deleteOnePublication);
   router.get("/posts/author/:id", auth, publicationController.getPublicationByAuthor);
+  router.put("/posts/:id/like", auth, publicationController.likePublication);
+  router.put("/posts/:id/dislike", auth, publicationController.dislikePublication);
 
   // ROUTES ADMIN
   router.delete("/admin/posts", auth, isAdmin, publicationController.AdminDeleteAll);

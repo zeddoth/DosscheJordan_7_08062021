@@ -12,6 +12,7 @@ module.exports = (app) => {
   router.delete("/profile/:id", auth, userController.deleteUser);
   router.put("/profile/:id", auth, userController.editUser);
   router.put("/profile/:id/password", auth, userController.editPassword);
+  router.put("/profile/:id/profileImage", auth, userController.editProfileImage);
 
   // ROUTES ADMIN
   router.put("/admin/profile/:id/roles", auth, isAdmin, userController.AdminEditRole);

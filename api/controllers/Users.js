@@ -158,15 +158,18 @@ exports.editPassword = (req, res) => {
 
 // Ont modifie l'image de profile de l'utilisateur
 exports.editProfileImage = (req, res) => {
-  if (!profileImage) {
-    res.status(404).send({ message: "Image manquante lors de l'envoie" });
-  }
   db.Users.update(
     {
-      profileImage: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`,
+      profileImage: `../assets/profileImages/${req.file}`,
     },
     { where: { id: getIdUser(req) } }
-  );
+  )
+    .then(() => {
+      res.status(200).send({ message: "Image modifié avec succès" });
+    })
+    .catch(() => {
+      res.status(500).send({ message: "Une erreur à été rencontré lors de la requête" });
+    });
 };
 
 // Ont récupère les information du profile par son ID
@@ -199,7 +202,6 @@ exports.getAllUsers = (req, res) => {
 };
 
 // ADMIN
-
 // Ont modifie le role de l'utilisateur (admin / user)
 exports.AdminEditRole = (req, res) => {
   const paramsId = req.params.id;
