@@ -4,6 +4,7 @@ const fs = require("fs");
 
 // Ont créer une publication
 exports.createPublication = (req, res) => {
+  console.log(req);
   // Ont valide la requête
   if (!req.body.title) {
     res.status(404).send({
@@ -19,9 +20,10 @@ exports.createPublication = (req, res) => {
   db.Publications.create({
     title: req.body.title,
     content: req.body.content,
-    attachment: `${req.protocol}://${req.get("host")}/publicationMedia/${req.file.filename}`,
+    attachment: `${req.protocol}://${req.get("host")}/assets/medias/${req.file.filename}`,
     UserId: getIdUser(req),
   })
+
     .then((data) => {
       res.send(data);
     })
@@ -142,145 +144,94 @@ exports.deleteOnePublication = (req, res) => {
 
 // Ont like une publication par son ID
 exports.likePublication = async (req, res) => {
-  const paramsId = req.params.id;
-  const alreadyLiked = await db.PublicationsLikes.findOne({
-    where: { userId: getIdUser(req), PublicationId: paramsId, state: "liked" },
-  });
-  const alreadyDisliked = await db.PublicationsLikes.findOne({
-    where: { userId: getIdUser(req), PublicationId: paramsId, state: "disliked" },
-  });
-  if (alreadyDisliked) {
-    await db.PublicationsLikes.destroy({
-      where: { UserId: getIdUser(req), PublicationId: paramsId, state: "disliked" },
+  try {
+    const paramsId = req.params.id;
+    const alreadyLiked = await db.PublicationsLikes.findOne({
+      where: { userId: getIdUser(req), PublicationId: paramsId, state: "liked" },
     });
-    await db.Publications.decrement({ dislike: 1 }, { where: { id: paramsId } })
-      .then(() => {
-        return res
-          .status(200)
-          .send({ message: "Annulation du dislike car vous avez voulu like !" });
-      })
-      .catch(() => {
-        return res.status(500).send({
-          message: "Une erreur à été rencontré lors de l'annulation du 'dislike' en BDD",
-        });
-      });
-    await db.PublicationsLikes.create({
-      PublicationId: paramsId,
-      UserId: getIdUser(req),
-      state: "liked",
+    const alreadyDisliked = await db.PublicationsLikes.findOne({
+      where: { userId: getIdUser(req), PublicationId: paramsId, state: "disliked" },
     });
-    await db.Publications.increment({ like: 1 }, { where: { id: paramsId } })
-      .then(() => {
-        return res.status(200).send({ message: "Le dislike à été pris en compte avec succès" });
-      })
-      .catch(() => {
-        return res.status(500).send({
-          message: "Une erreur à été rencontré lors du 'dislike' en BDD",
-        });
+    if (alreadyDisliked) {
+      await db.PublicationsLikes.destroy({
+        where: { UserId: getIdUser(req), PublicationId: paramsId, state: "disliked" },
       });
-  }
-  if (!alreadyLiked) {
-    await db.PublicationsLikes.create({
-      PublicationId: paramsId,
-      UserId: getIdUser(req),
-      state: "liked",
-    });
-    await db.Publications.increment({ like: 1 }, { where: { id: paramsId } })
-      .then(() => {
-        return res.status(200).send({ message: "Le like à été pris en compte avec succès" });
-      })
-      .catch(() => {
-        return res.status(500).send({
-          message: "Une erreur à été rencontré lors du 'like' en BDD",
-        });
+      await db.Publications.decrement({ dislike: 1 }, { where: { id: paramsId } });
+      await db.PublicationsLikes.create({
+        PublicationId: paramsId,
+        UserId: getIdUser(req),
+        state: "liked",
       });
-  } else {
-    await db.PublicationsLikes.destroy({
-      where: { UserId: getIdUser(req), PublicationId: paramsId, state: "liked" },
-    });
-    await db.Publications.decrement({ like: 1 }, { where: { id: paramsId } })
-      .then(() => {
-        return res
-          .status(200)
-          .send({ message: "L'annulation du like à été pris en compte avec succès" });
-      })
-      .catch(() => {
-        return res.status(500).send({
-          message: "Une erreur à été rencontré lors de l'annulation du 'like' en BDD",
-        });
+      await db.Publications.increment({ like: 1 }, { where: { id: paramsId } });
+      res.status(200).send({ message: "Annulation du dislike car vous avez voulu like !" });
+      return;
+    }
+
+    if (!alreadyLiked) {
+      await db.PublicationsLikes.create({
+        PublicationId: paramsId,
+        UserId: getIdUser(req),
+        state: "liked",
       });
+      await db.Publications.increment({ like: 1 }, { where: { id: paramsId } });
+      res.status(200).send({ message: "Le like à été pris en compte avec succès" });
+      return;
+    } else {
+      await db.PublicationsLikes.destroy({
+        where: { UserId: getIdUser(req), PublicationId: paramsId, state: "liked" },
+      });
+      await db.Publications.decrement({ like: 1 }, { where: { id: paramsId } });
+      res.status(200).send({ message: "L'annulation du like à été pris en compte avec succès" });
+      return;
+    }
+  } catch (error) {
+    return res.status(500).send({ message: "Une erreur serveur à été rencontré !" });
   }
 };
 
 // Ont dislike une publication par son ID
 exports.dislikePublication = async (req, res) => {
-  const paramsId = req.params.id;
-  const alreadyLiked = await db.PublicationsLikes.findOne({
-    where: { userId: getIdUser(req), PublicationId: paramsId, state: "liked" },
-  });
-  const alreadyDisliked = await db.PublicationsLikes.findOne({
-    where: { userId: getIdUser(req), PublicationId: paramsId, state: "disliked" },
-  });
-  if (alreadyLiked) {
-    await db.PublicationsLikes.destroy({
-      where: { UserId: getIdUser(req), PublicationId: paramsId, state: "liked" },
+  try {
+    const paramsId = req.params.id;
+    const alreadyLiked = await db.PublicationsLikes.findOne({
+      where: { userId: getIdUser(req), PublicationId: paramsId, state: "liked" },
     });
-    await db.Publications.decrement({ like: 1 }, { where: { id: paramsId } })
-      .then(() => {
-        return res
-          .status(200)
-          .send({ message: "Annulation du like car vous avez voulu dislike !" });
-      })
-      .catch(() => {
-        return res.status(500).send({
-          message: "Une erreur à été rencontré lors de l'annulation du 'like' en BDD",
-        });
-      });
-    await db.PublicationsLikes.create({
-      PublicationId: paramsId,
-      UserId: getIdUser(req),
-      state: "disliked",
+    const alreadyDisliked = await db.PublicationsLikes.findOne({
+      where: { userId: getIdUser(req), PublicationId: paramsId, state: "disliked" },
     });
-    await db.Publications.increment({ dislike: 1 }, { where: { id: paramsId } })
-      .then(() => {
-        return res.status(200).send({ message: "Le dislike à été pris en compte avec succès" });
-      })
-      .catch(() => {
-        return res.status(500).send({
-          message: "Une erreur à été rencontré lors du 'dislike' en BDD",
-        });
+    if (alreadyLiked) {
+      await db.PublicationsLikes.destroy({
+        where: { UserId: getIdUser(req), PublicationId: paramsId, state: "liked" },
       });
-  }
-  if (!alreadyDisliked) {
-    await db.PublicationsLikes.create({
-      PublicationId: paramsId,
-      UserId: getIdUser(req),
-      state: "disliked",
-    });
-    await db.Publications.increment({ dislike: 1 }, { where: { id: paramsId } })
-      .then(() => {
-        return res.status(200).send({ message: "Le dislike à été pris en compte avec succès" });
-      })
-      .catch(() => {
-        return res.status(500).send({
-          message: "Une erreur à été rencontré lors du 'dislike' en BDD",
-        });
+      await db.Publications.decrement({ like: 1 }, { where: { id: paramsId } });
+      await db.PublicationsLikes.create({
+        PublicationId: paramsId,
+        UserId: getIdUser(req),
+        state: "disliked",
       });
-  } else {
-    await db.PublicationsLikes.destroy({
-      where: { UserId: getIdUser(req), PublicationId: paramsId, state: "disliked" },
-    });
-    await db.Publications.decrement({ dislike: 1 }, { where: { id: paramsId } })
-      .then(() => {
-        return res
-          .status(200)
-          .send({ message: "L'annulation du dislike à été pris en compte avec succès" });
-      })
-      .catch(() => {
-        return res.status(500).send({
-          message: "Une erreur à été rencontré lors de l'annulation du 'dislike' en BDD",
-        });
+      await db.Publications.increment({ dislike: 1 }, { where: { id: paramsId } });
+      res.status(200).send({ message: "Annulation du like car vous avez voulu dislike !" });
+      return;
+    }
+    if (!alreadyDisliked) {
+      await db.PublicationsLikes.create({
+        PublicationId: paramsId,
+        UserId: getIdUser(req),
+        state: "disliked",
       });
+      await db.Publications.increment({ dislike: 1 }, { where: { id: paramsId } });
+      res.status(200).send({ message: "Le dislike à été pris en compte avec succès" });
+      return;
+    } else {
+      await db.PublicationsLikes.destroy({
+        where: { UserId: getIdUser(req), PublicationId: paramsId, state: "disliked" },
+      });
+      await db.Publications.decrement({ dislike: 1 }, { where: { id: paramsId } });
+      res.status(200).send({ message: "L'annulation du dislike à été pris en compte avec succès" });
+      return;
+    }
+  } catch (error) {
+    return res.status(500).send({ message: "Une erreur serveur à été rencontré !" });
   }
 };
 

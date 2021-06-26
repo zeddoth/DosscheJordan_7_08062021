@@ -160,7 +160,7 @@ exports.editPassword = (req, res) => {
 exports.editProfileImage = (req, res) => {
   db.Users.update(
     {
-      profileImage: `../assets/profileImages/${req.file}`,
+      profileImage: `../assets/profileImages/${req.file.filename}`,
     },
     { where: { id: getIdUser(req) } }
   )

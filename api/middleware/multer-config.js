@@ -10,13 +10,13 @@ const MIME_TYPES = {
 
 const storage = multer.diskStorage({
   destination: (req, file, callback) => {
-    callback(null, "assets");
+    callback(null, "assets/medias/");
   },
   filename: (req, file, callback) => {
     const name = file.originalname.split(" ").join("_");
     const extension = MIME_TYPES[file.mimetype];
-    callback(null, name + Date.now() + "." + extension);
+    callback(null, Date.now() + "-" + name);
   },
 });
 
-module.exports = multer({ storage: storage }).single("assets");
+module.exports = multer({ storage: storage }).single("attachment");
