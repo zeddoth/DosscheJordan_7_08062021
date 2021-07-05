@@ -1,0 +1,11 @@
+* {
+  font-family: Bahnschrift, Arial, Helvetica, sans-serif;
+}
+body {
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  background: no-repeat center url("./medias/background-home.jpg");
+  font-weight: 500;
+}
