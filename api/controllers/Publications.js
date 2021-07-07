@@ -20,7 +20,7 @@ exports.createPublication = (req, res) => {
   db.Publications.create({
     title: req.body.title,
     content: req.body.content,
-    attachment: `${req.protocol}://${req.get("host")}/assets/medias/${req.file.filename}`,
+    attachment: `../styles/medias/uploaded/${req.file.filename}`,
     UserId: getIdUser(req),
   })
 
@@ -102,7 +102,7 @@ exports.getAllPublications = (req, res) => {
     include: [
       {
         model: db.Users,
-        attributes: ["username"],
+        attributes: ["username", "roles", "profileImage"],
       },
     ],
   })

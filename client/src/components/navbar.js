@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import ReactTooltip from "react-tooltip";
 import "../styles/navbar.css";
 import logo from "../styles/medias/logo-only.png";
-import profileImage from "../styles/medias/Rinou.svg";
+import profileImage from "../styles/medias/defaultProfile.svg";
 
 const Navbar = () => {
   const disconnect = () => {

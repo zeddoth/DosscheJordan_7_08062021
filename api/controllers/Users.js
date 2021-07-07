@@ -45,40 +45,30 @@ exports.signup = (req, res) => {
 // Ont vérifie les informations du compte et ont se connecte
 exports.login = (req, res) => {
   if (!req.body.username) {
-    res.status(404).send({
-      message: "Le champ 'Utilisateur' ne peut pas être vide",
+    res.status(400).send({
+      message: "Le champ 'Nom d'utilisateur' ne peut pas être vide",
     });
   }
   if (!req.body.password) {
-    res.status(404).send({
+    res.status(400).send({
       message: "Le champ 'Mot de passe' ne peut pas être vide",
     });
   }
-  db.Users.findOne({ where: { username: req.body.username } })
-    .then((user) => {
-      if (!user) {
-        res.status(404).send({ message: "Utilisateur inexistant" });
+  db.Users.findOne({ where: { username: req.body.username } }).then((user) => {
+    if (!user) {
+      res.status(400).send({ message: "Utilisateur inexistant" });
+    }
+    bcrypt.compare(req.body.password, user.password).then((valid) => {
+      if (!valid) {
+        res.status(400).send({ message: "Mot de passe incorrect" });
+      } else {
+        res.status(200).send({
+          userId: user.id,
+          token: jwt.sign({ userId: user.id }, randomToken, { expiresIn: "24h" }),
+        });
       }
-      bcrypt
-        .compare(req.body.password, user.password)
-        .then((valid) => {
-          if (!valid) {
-            res.status(404).send({ message: "Mot de passe incorrect" });
-          }
-          res.status(200).send({
-            userId: user.id,
-            token: jwt.sign({ userId: user.id }, randomToken, { expiresIn: "24h" }),
-          });
-        })
-        .catch(() =>
-          res
-            .status(500)
-            .send({ message: "Une erreur à été rencontrés lors de l'encryptage du mot de passe" })
-        );
-    })
-    .catch((error) =>
-      res.status(500).send({ message: "Une erreur à été rencontrés lors de la requête" })
-    );
+    });
+  });
 };
 
 // Ont supprime l'utilisateur par son ID

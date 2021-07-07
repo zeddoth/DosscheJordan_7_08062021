@@ -2,12 +2,9 @@
   font-family: Bahnschrift, Arial, Helvetica, sans-serif;
 }
 body {
-  height: 100vh;
-  width: 100vw;
-  margin: 0;
-  padding: 0;
-  background: no-repeat center url("./medias/background.webp");
-  font-weight: 500;
+  background: url(../styles/medias/background.jpg) fixed no-repeat;
+  background-size: 100%;
+  background-size: cover;
 }
 h1 {
   margin: 0;

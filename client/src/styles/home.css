@@ -1,11 +1,12 @@
 * {
   font-family: Bahnschrift, Arial, Helvetica, sans-serif;
+  margin: 0;
 }
 body {
-  height: 100vh;
-  width: 100vw;
-  margin: 0;
-  padding: 0;
-  background: no-repeat center url("./medias/background-home.jpg");
-  font-weight: 500;
+  background: url(../styles/medias/background-home.jpg) fixed no-repeat;
+  background-size: 100%;
+  background-size: cover;
+}
+.all-publications {
+  margin-top: 250px;
 }
