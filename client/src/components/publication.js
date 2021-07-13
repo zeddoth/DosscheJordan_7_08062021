@@ -3,10 +3,10 @@ import React from "react";
 import "../styles/publication.css";
 import Moment from "react-moment";
 import "moment/locale/fr";
-// import "moment-timezone";
 
 const Publication = ({
   author,
+  roles,
   createdAt,
   title,
   content,
@@ -16,14 +16,46 @@ const Publication = ({
   comments,
   userImage,
   publicationId,
+  remove,
 }) => {
-  const deletePublication = () => {
+  const isAdmin = () => {
+    if (roles === "admin") {
+      return (
+        <div className="publication_profile-role">
+          <i className="fas fa-star yellow-star"></i>
+        </div>
+      );
+    } else {
+      return null;
+    }
+  };
+  const validAttachment = () => {
+    if (attachment === null) {
+      return null;
+    } else {
+      return (
+        <div className="publication_image">
+          <img
+            className="publication_image_src"
+            src={require(`../styles/medias/uploaded/${attachment}`).default}
+            alt={`Media de la publication de ${author}`}
+          ></img>
+        </div>
+      );
+    }
+  };
+  const deletePublication = async () => {
     const token = JSON.parse(localStorage.getItem("token")).value;
-    axios.delete(`http://localhost:8080/api/posts/${publicationId}`, {
-      headers: {
-        Authorization: `token ${token}`,
-      },
-    });
+    try {
+      remove(publicationId);
+      await axios.delete(`http://localhost:8080/api/posts/${publicationId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    } catch (e) {
+      console.log(e);
+    }
   };
   return (
     <>
@@ -35,9 +67,7 @@ const Publication = ({
               src={require(`../styles/medias/uploaded/${userImage}`).default}
               alt={`Avatar de  ${author}`}
             ></img>
-            <div className="publication_profile-role">
-              <i className="fas fa-star yellow-star"></i>
-            </div>
+            {isAdmin()}
           </div>
           <div className="publication_date">
             <p className="publication_date_publication">
@@ -50,6 +80,7 @@ const Publication = ({
             <p>{content}</p>
             <div className="fade"></div>
           </div>
+          {validAttachment()}
           <div className="publication_like_comments">
             <hr></hr>
             <i className="far fa-thumbs-up icon like"></i>

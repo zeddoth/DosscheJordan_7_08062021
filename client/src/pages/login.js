@@ -55,7 +55,7 @@ const Login = () => {
                 Nom d'utilisateur :
               </label>
               <input
-                autoComplete="username²"
+                autoComplete="username"
                 id="username"
                 className="input"
                 type="text"

@@ -4,15 +4,15 @@ const fs = require("fs");
 
 // Ont créer une publication
 exports.createPublication = (req, res) => {
-  console.log(req);
   // Ont valide la requête
-  if (!req.body.title) {
-    res.status(404).send({
+  console.log(req.body);
+  if (req.body.title === "") {
+    res.status(401).send({
       message: "Le champ 'Titre' ne peut pas être vide",
     });
   }
-  if (!req.body.content) {
-    res.status(404).send({
+  if (req.body.content === "") {
+    res.status(401).send({
       message: "Le champ 'Contenu' ne peut pas être vide",
     });
   }
@@ -20,7 +20,7 @@ exports.createPublication = (req, res) => {
   db.Publications.create({
     title: req.body.title,
     content: req.body.content,
-    attachment: `../styles/medias/uploaded/${req.file.filename}`,
+    attachment: req.file ? req.file.filename : null,
     UserId: getIdUser(req),
   })
 
@@ -118,28 +118,26 @@ exports.getAllPublications = (req, res) => {
 };
 
 // Ont supprime une publication par son ID
-exports.deleteOnePublication = (req, res) => {
+exports.deleteOnePublication = async (req, res) => {
   const paramsId = req.params.id;
-  db.Publications.destroy({
-    where: { id: paramsId },
-    UserId: getIdUser(req),
-  })
-    .then((num) => {
-      if (num == 1) {
-        res.status(200).send({
-          message: "La publication à été supprimer avec succès!",
-        });
-      } else {
-        res.status(404).send({
-          message: `La publication avec l'id=${paramsId} ne peut être supprimer. Peut-être que la publication n'a pas été trouvé!`,
-        });
-      }
-    })
-    .catch(() => {
-      res.status(500).send({
-        message: "La publication avec l'id=" + paramsId + "n'a pas plus être supprimer",
+  const post = await db.Publications.findByPk(paramsId);
+  const filename = post.attachment;
+  try {
+    fs.unlink(`../client/src/styles/medias/uploaded/${filename}`, () => {
+      db.Publications.destroy({
+        where: { id: paramsId },
+        UserId: getIdUser(req),
+      });
+    }).then(() => {
+      res.status(200).send({
+        message: "La publication à été supprimer avec succès!",
       });
     });
+  } catch (e) {
+    res.status(500).send({
+      message: "La publication avec l'id=" + paramsId + "n'a pas plus être supprimer",
+    });
+  }
 };
 
 // Ont like une publication par son ID

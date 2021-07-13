@@ -9,7 +9,7 @@ body {
 h1 {
   margin: 0;
 }
-label {
+.box label {
   width: 100%;
   display: inline-block;
   margin-bottom: 10px;
