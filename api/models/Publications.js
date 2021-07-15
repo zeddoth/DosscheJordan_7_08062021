@@ -1,3 +1,5 @@
+const db = require("../models");
+
 module.exports = (sequelize, DataTypes) => {
   const Publications = sequelize.define("Publications", {
     id: {
@@ -30,6 +32,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
     },
     dislike: {
+      allowNull: false,
+      defaultValue: 0,
+      type: DataTypes.INTEGER,
+    },
+    comment: {
       allowNull: false,
       defaultValue: 0,
       type: DataTypes.INTEGER,

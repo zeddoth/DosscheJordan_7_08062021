@@ -1,22 +1,19 @@
 import Login from "./pages/login";
 import Signup from "./pages/signup";
-import Home from "./pages/home.js";
+import Home from "./pages/home";
+import onePagePublication from "./pages/onePagePublication";
 import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
 import "./styles/app.css";
 
 function App() {
   const getWithExpiry = (key) => {
     const itemStr = localStorage.getItem(key);
-    // si la clé n'existe pas on retourne "null"
     if (!itemStr) {
       return null;
     }
     const item = JSON.parse(itemStr);
     const now = new Date();
-    // compare le "timestamp" d'expiration avec celui actuel
     if (now.getTime() > item.expiry) {
-      // si la clé est expiré ont supprime la clé du localstorage
-      // et ont renvoie "null"
       localStorage.removeItem(key);
       return null;
     }
@@ -46,6 +43,8 @@ function App() {
       <Router>
         <Route path="/login" exact component={Login} />
         <Route path="/signup" exact component={Signup} />
+        <Route path="/publication:idPost" exact component={onePagePublication} />
+        <Route path="/publication" component={onePagePublication} />
         <PrivateRoute path="/" exact component={Home} on />
       </Router>
     </div>

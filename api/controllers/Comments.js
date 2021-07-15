@@ -2,7 +2,7 @@ const db = require("../models");
 const getIdUser = require("../utils/decodeToken");
 
 // Ont créé un commentaire par rapport à l'ID de la publication
-exports.createComment = (req, res) => {
+exports.createComment = async (req, res) => {
   const PublicationId = req.params.PublicationId;
   const comment = {
     content: req.body.content,
@@ -10,16 +10,26 @@ exports.createComment = (req, res) => {
     PublicationId: PublicationId,
     attachment: req.body.attachment,
   };
+
   console.log(comment);
-  db.Comments.create(comment, { where: { PublicationId: PublicationId } })
+  await db.Comments.create(comment, { where: { PublicationId: PublicationId } })
     .then((data) => {
       res.send({ data: data, message: "Commentaire publié avec succès" });
     })
     .catch(() => {
-      res
-        .status(400)
-        .send({ message: "Une erreur à été rencontré lors de la publication du commentaire" });
+      res.status(400).send({ message: "Une erreur à été rencontré lors de la publication du commentaire" });
     });
+  const countComment = async () => {
+    const commentAmount = {
+      comment: await db.Comments.count({
+        where: {
+          publicationId: PublicationId,
+        },
+      }),
+    };
+    return commentAmount;
+  };
+  db.Publications.update(await countComment(), { where: { id: PublicationId } });
 };
 
 // Ont récupère les commentaire par rapport à l'ID de la publication
@@ -82,8 +92,7 @@ exports.AdminDeleteAllComments = (req, res) => {
     })
     .catch((err) => {
       res.status(500).send({
-        message:
-          err.message || "Une erreur à été rencontré lors de la suppresions des commentaires",
+        message: err.message || "Une erreur à été rencontré lors de la suppresions des commentaires",
       });
     });
 };

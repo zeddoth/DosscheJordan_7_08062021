@@ -84,9 +84,7 @@ exports.deleteUser = (req, res) => {
       } else {
         res.status(404).send({
           message:
-            "L'utilisateur avec l'id= " +
-            paramsId +
-            " n'a pas plus être supprimer, peut être qu'il n'existe pas",
+            "L'utilisateur avec l'id= " + paramsId + " n'a pas plus être supprimer, peut être qu'il n'existe pas",
         });
       }
     })
@@ -99,13 +97,7 @@ exports.deleteUser = (req, res) => {
 
 // Ont complète le profile par son ID
 exports.editUser = (req, res) => {
-  if (
-    !req.body.email ||
-    !req.body.lastName ||
-    !req.body.firstName ||
-    !req.body.job ||
-    !req.body.birthday
-  ) {
+  if (!req.body.email || !req.body.lastName || !req.body.firstName || !req.body.job || !req.body.birthday) {
     res.status(400).send({
       message: "Un ou plusieurs champs sont vide",
     });
@@ -140,9 +132,7 @@ exports.editPassword = (req, res) => {
       res.status(201).send({ message: "Mot de passe modifié avec succès" });
     })
     .catch(() => {
-      res
-        .status(500)
-        .send({ message: "Une erreur à été rencontré lors de la modification du mot de passe" });
+      res.status(500).send({ message: "Une erreur à été rencontré lors de la modification du mot de passe" });
     });
 };
 
@@ -165,14 +155,13 @@ exports.editProfileImage = (req, res) => {
 // Ont récupère les information du profile par son ID
 exports.getUser = (req, res) => {
   const paramsId = req.params.id;
-  db.Users.findByPk(paramsId)
+  db.Users.findByPk(paramsId, { attributes: { exclude: ["password"] } })
     .then((data) => {
       res.send(data);
     })
     .catch(() => {
       res.status(500).send({
-        message:
-          "Une erreur à été rencontré lors de la récupération du profil avec l'id=" + paramsId,
+        message: "Une erreur à été rencontré lors de la récupération du profil avec l'id=" + paramsId,
       });
     });
 };
@@ -185,9 +174,7 @@ exports.getAllUsers = (req, res) => {
       res.send(data);
     })
     .catch(() => {
-      res
-        .status(500)
-        .send({ message: "Une erreur à été rencontré lors de la récupérations des utilisateurs" });
+      res.status(500).send({ message: "Une erreur à été rencontré lors de la récupérations des utilisateurs" });
     });
 };
 
@@ -223,9 +210,7 @@ exports.AdminDeleteUser = (req, res) => {
       } else {
         res.status(404).send({
           message:
-            "L'utilisateur avec l'id= " +
-            paramsId +
-            " n'a pas plus être supprimer, peut être qu'il n'existe pas",
+            "L'utilisateur avec l'id= " + paramsId + " n'a pas plus être supprimer, peut être qu'il n'existe pas",
         });
       }
     })

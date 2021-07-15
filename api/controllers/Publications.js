@@ -11,9 +11,9 @@ exports.createPublication = (req, res) => {
       message: "Le champ 'Titre' ne peut pas être vide",
     });
   }
-  if (req.body.content === "") {
+  if (!req.file && req.body.content === "") {
     res.status(401).send({
-      message: "Le champ 'Contenu' ne peut pas être vide",
+      message: "Le champ 'Contenu' ne peut pas être vide sans image",
     });
   }
   // Ont sauvegarde une publication
@@ -43,7 +43,7 @@ exports.getPublicationByAuthor = (req, res) => {
     include: [
       {
         model: db.Users,
-        attributes: ["username"],
+        attributes: ["username", "roles", "profileImage", "id"],
       },
     ],
   })
@@ -52,9 +52,7 @@ exports.getPublicationByAuthor = (req, res) => {
     })
     .catch((err) => {
       res.status(500).send({
-        message:
-          "Une erreur à été rencontré lors de la récupération des publication de l'auteur avec l'id=" +
-          authorID,
+        message: "Une erreur à été rencontré lors de la récupération des publication de l'auteur avec l'id=" + authorID,
       });
     });
 };
@@ -62,13 +60,14 @@ exports.getPublicationByAuthor = (req, res) => {
 // Ont récupère une publication par son ID
 exports.getOnePublication = (req, res) => {
   const paramsId = req.params.id;
+
   db.Publications.findByPk(paramsId, {
     order: [[db.Comments, "createdAt", "DESC"]],
     where: { PublicationId: req.body.PublicationId },
     include: [
       {
         model: db.Users,
-        attributes: ["username"],
+        attributes: ["username", "roles", "profileImage", "id"],
       },
       {
         model: db.Comments,
@@ -88,9 +87,7 @@ exports.getOnePublication = (req, res) => {
     })
     .catch(() => {
       res.status(500).send({
-        message:
-          "Une erreur à été rencontré lors de la récupération de la publication avec l'id=" +
-          paramsId,
+        message: "Une erreur à été rencontré lors de la récupération de la publication avec l'id=" + paramsId,
       });
     });
 };
@@ -111,17 +108,17 @@ exports.getAllPublications = (req, res) => {
     })
     .catch((err) => {
       res.status(500).send({
-        message:
-          err.message || "Une erreur à été rencontré lors de la récupérations des publications",
+        message: err.message || "Une erreur à été rencontré lors de la récupérations des publications",
       });
     });
 };
 
 // Ont supprime une publication par son ID
-exports.deleteOnePublication = async (req, res) => {
+exports.deleteOnePublication = (req, res) => {
   const paramsId = req.params.id;
-  const post = await db.Publications.findByPk(paramsId);
+  const post = db.Publications.findByPk(paramsId);
   const filename = post.attachment;
+  console.log(filename);
   try {
     fs.unlink(`../client/src/styles/medias/uploaded/${filename}`, () => {
       db.Publications.destroy({
@@ -129,12 +126,12 @@ exports.deleteOnePublication = async (req, res) => {
         UserId: getIdUser(req),
       });
     }).then(() => {
-      res.status(200).send({
+      return res.status(200).send({
         message: "La publication à été supprimer avec succès!",
       });
     });
   } catch (e) {
-    res.status(500).send({
+    return res.status(500).send({
       message: "La publication avec l'id=" + paramsId + "n'a pas plus être supprimer",
     });
   }
@@ -246,8 +243,7 @@ exports.AdminDeleteAll = (req, res) => {
     })
     .catch((err) => {
       res.status(500).send({
-        message:
-          err.message || "Une erreur à été rencontré lors de la suppresions des publications",
+        message: err.message || "Une erreur à été rencontré lors de la suppresions des publications",
       });
     });
 };

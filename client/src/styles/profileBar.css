@@ -1,0 +1,64 @@
+.profileBar_box {
+  background-color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.16);
+  height: 250px;
+  margin-top: 40px;
+  padding-left: 20%;
+  padding-right: 20%;
+  position: relative;
+  border-radius: 10px;
+}
+.profileBar_box_profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.profileBar_box_profile_img {
+  height: 125px;
+  width: 125px;
+  border-radius: 100%;
+  object-fit: cover;
+  margin-bottom: 1rem;
+}
+.profileBar_box_profile_owner {
+  display: flex;
+  flex-direction: row;
+}
+.profileBar_box_profile_owner_role {
+  font-size: 15px;
+  width: 25px;
+  max-width: 25px;
+  max-height: 25px;
+  height: 25px;
+  background-color: white;
+  border-radius: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: #c2c2c2 solid 1px;
+}
+.profileBar_box_activities {
+  display: flex;
+  position: absolute;
+  bottom: 30px;
+  right: 20%;
+}
+.profileBar_box_activities p {
+  font-weight: 300;
+  font-size: 20px;
+}
+.profileBar_box_activities p:nth-child(1) {
+  margin-right: 1rem;
+}
+
+.profileBar_box_register p {
+  font-size: 15px;
+  font-weight: 300;
+  position: absolute;
+  top: 15px;
+  right: 20%;
+}

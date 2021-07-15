@@ -2,18 +2,24 @@ import React, { useState } from "react";
 import "../styles/createPublication.css";
 import axios from "axios";
 
-const CreatePublication = () => {
+const CreatePublication = ({ setUpdate, update }) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [attachment, setAttachment] = useState(null);
   const token = JSON.parse(localStorage.getItem("token")).value;
-  const postPublication = (e) => {
+  const postPublication = async (e) => {
     e.preventDefault();
+    if (title.trim() === "" && content.trim() === "") {
+      return false;
+    }
+    if (title.trim().length < 3) {
+      return false;
+    }
     const data = new FormData();
     data.append("title", title);
     data.append("content", content);
     data.append("attachment", attachment);
-    axios
+    await axios
       .post(`http://localhost:8080/api/posts`, data, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -25,6 +31,7 @@ const CreatePublication = () => {
       .catch(function (error) {
         console.log(error);
       });
+    setUpdate(update + 1);
   };
   return (
     <>
@@ -37,7 +44,10 @@ const CreatePublication = () => {
                 className="form_input form_input_title"
                 type="text"
                 value={title}
-                placeholder="Votre titre de publication."
+                maxLength={50}
+                minLength={10}
+                required
+                placeholder="Votre titre de publication (50 caractères max)"
                 onChange={(e) => setTitle(e.target.value)}
               />
             </label>
@@ -48,7 +58,10 @@ const CreatePublication = () => {
                 id="content"
                 name="content"
                 value={content}
-                placeholder="Le contenu de votre publication."
+                placeholder="Le contenu de votre publication (255 caractères max)"
+                maxLength={255}
+                minLength={10}
+                required
                 onChange={(e) => setContent(e.target.value)}
               />
             </label>

@@ -6,11 +6,15 @@ import CreatePublication from "../components/createPublication";
 import "../styles/home.css";
 
 const Home = () => {
-  const [post, setPost] = useState([]);
   const token = JSON.parse(localStorage.getItem("token")).value;
+  const userId = JSON.parse(localStorage.getItem("userId")).value;
+  const [post, setPost] = useState([]);
+  const [user, setUser] = useState({});
   const removePublication = (publicationId) => {
     setPost(post.filter((p) => p.id !== publicationId));
   };
+
+  const [updatePost, setUpdatePost] = useState(0);
   useEffect(() => {
     axios
       .get("http://localhost:8080/api/posts", {
@@ -25,27 +29,36 @@ const Home = () => {
       .catch((error) => {
         console.log(error);
       });
+  }, [updatePost]);
+
+  useEffect(() => {
+    axios
+      .get(`http://localhost:8080/api/profile/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        setUser(response.data);
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }, []);
   return (
     <>
-      <Navbar />
-      <CreatePublication />
+      <Navbar owner={user.username} userImage={user.profileImage} />;
+      <CreatePublication setUpdate={setUpdatePost} update={updatePost} />
       <div className="all-publications">
-        {post.map((e, index) => {
+        {post.map((postContent) => {
           return (
             <Publication
-              key={index}
-              author={e.User.username}
-              content={e.content}
-              title={e.title}
-              createdAt={e.createdAt}
-              like={e.like}
-              dislike={e.dislike}
-              userImage={e.User.profileImage}
-              attachment={e.attachment}
-              roles={e.User.roles}
-              publicationId={e.id}
+              key={postContent.id}
               remove={removePublication}
+              rolesCurrentUser={user.roles}
+              post={postContent}
+              userConnected={user}
             />
           );
         })}
