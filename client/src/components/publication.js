@@ -1,5 +1,5 @@
 import axios from "axios";
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "../styles/publication.css";
 import Moment from "react-moment";
@@ -7,13 +7,18 @@ import "moment/locale/fr";
 import { useHistory, useParams } from "react-router";
 
 const Publication = ({ post, remove, rolesCurrentUser, userConnected }) => {
+  const token = JSON.parse(localStorage.getItem("token")).value;
+  const UserId = JSON.parse(localStorage.getItem("userId")).value;
   const redirectToHome = useHistory();
   let { idPost } = useParams();
   const profileImgRoute = post.User.profileImage ?? "defaultProfile.png";
-  const postImgRoute = post.attachment ?? "defaultPublication.png";
-  const UserId = JSON.parse(localStorage.getItem("userId")).value;
+  const [like, setLike] = useState(post.like);
+  const [dislike, setDislike] = useState(post.dislike);
+  const [likeOrDislike, setLikeOrDislike] = useState(
+    post.PublicationsLikes.length === 0 ? null : post.PublicationsLikes[0].state
+  );
   const isAdmin = () => {
-    if (post.roles === "admin") {
+    if (post.User.roles === "admin") {
       return (
         <div className="publication_profile-role">
           <i className="fas fa-star yellow-star"></i>
@@ -31,7 +36,7 @@ const Publication = ({ post, remove, rolesCurrentUser, userConnected }) => {
         <div className="publication_image">
           <img
             className="publication_image_src"
-            src={require(`../styles/medias/uploaded/${postImgRoute}`).default}
+            src={post.attachment}
             alt={`Media de la publication de ${post.author}`}
           ></img>
         </div>
@@ -39,7 +44,6 @@ const Publication = ({ post, remove, rolesCurrentUser, userConnected }) => {
     }
   };
   const deletePublication = async () => {
-    const token = JSON.parse(localStorage.getItem("token")).value;
     try {
       if (!idPost) remove(post.id);
       if (idPost) redirectToHome.push("/");
@@ -48,9 +52,7 @@ const Publication = ({ post, remove, rolesCurrentUser, userConnected }) => {
           Authorization: `Bearer ${token}`,
         },
       });
-    } catch (e) {
-      console.log(e);
-    }
+    } catch (e) {}
   };
   const adminDeletePublication = async () => {
     const token = JSON.parse(localStorage.getItem("token")).value;
@@ -62,20 +64,7 @@ const Publication = ({ post, remove, rolesCurrentUser, userConnected }) => {
           Authorization: `Bearer ${token}`,
         },
       });
-    } catch (e) {
-      console.log(e);
-    }
-  };
-  const isOwnerForDelete = () => {
-    if (post.UserId === UserId) {
-      return (
-        <div>
-          <i className="far fa-trash-alt publication_delete-icon" onClick={deletePublication}></i>
-        </div>
-      );
-    } else {
-      return null;
-    }
+    } catch (e) {}
   };
   const isAdminForDelete = () => {
     if (rolesCurrentUser === "admin") {
@@ -88,7 +77,81 @@ const Publication = ({ post, remove, rolesCurrentUser, userConnected }) => {
       return null;
     }
   };
-
+  const isOwnerForDelete = () => {
+    if (post.UserId === UserId && rolesCurrentUser === "user") {
+      return (
+        <div>
+          <i className="far fa-trash-alt publication_delete-icon" onClick={deletePublication}></i>
+        </div>
+      );
+    } else {
+      return null;
+    }
+  };
+  const updateLike = () => {
+    if (likeOrDislike === "liked") {
+      setLikeOrDislike(null);
+      return setLike(like - 1);
+    }
+    if (likeOrDislike === null) {
+      setLikeOrDislike("liked");
+      return setLike(like + 1);
+    }
+    setLikeOrDislike("liked");
+    setLike(like + 1);
+    setDislike(dislike - 1);
+  };
+  const updateDislike = () => {
+    if (likeOrDislike === "disliked") {
+      setLikeOrDislike(null);
+      return setDislike(dislike - 1);
+    }
+    if (likeOrDislike === null) {
+      setLikeOrDislike("disliked");
+      return setDislike(dislike + 1);
+    }
+    setLikeOrDislike("disliked");
+    setDislike(dislike + 1);
+    setLike(like - 1);
+  };
+  const likePublication = async () => {
+    await axios.put(
+      `http://localhost:8080/api/posts/${post.id}/like`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    updateLike();
+  };
+  const dislikePublication = async () => {
+    await axios.put(
+      `http://localhost:8080/api/posts/${post.id}/dislike`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    updateDislike();
+  };
+  const likeStatus = () => {
+    if (likeOrDislike === "liked") {
+      return <i className="fas fa-thumbs-up icon like" onClick={likePublication}></i>;
+    } else {
+      return <i className="far fa-thumbs-up icon like" onClick={likePublication}></i>;
+    }
+  };
+  const dislikeStatus = () => {
+    if (likeOrDislike === "disliked") {
+      return <i className="fas fa-thumbs-down icon dislike" onClick={dislikePublication}></i>;
+    } else {
+      return <i className="far fa-thumbs-down icon dislike" onClick={dislikePublication}></i>;
+    }
+  };
   return (
     <>
       <div className="publications_box bounce">
@@ -96,7 +159,7 @@ const Publication = ({ post, remove, rolesCurrentUser, userConnected }) => {
           <div className="publication_profile">
             <img
               className="publication_profile-image"
-              src={require(`../styles/medias/uploaded/${profileImgRoute}`).default}
+              src={profileImgRoute}
               alt={`Avatar de  ${post.User.username}`}
             ></img>
             {isAdmin()}
@@ -117,14 +180,17 @@ const Publication = ({ post, remove, rolesCurrentUser, userConnected }) => {
           {validAttachment()}
           <div className="publication_like_comments">
             <hr></hr>
-            <i className="far fa-thumbs-up icon like"></i>
-            <span className="number">{post.like}</span> <i className="far fa-thumbs-down icon dislike"></i>
-            <span className="number">{post.dislike}</span>
-            <i className="fas fa-comments icon blue"></i>
-            <span className="number">{post.comment} Commentaires</span>
+            {likeStatus()}
+            <span className="number">{like}</span>
+            {dislikeStatus()}
+            <span className="number">{dislike}</span>
+            <Link to={{ pathname: `/publication?id=${post.id}`, state: { post, userConnected } }}>
+              <i className="fas fa-comments icon blue"></i>
+              <span className="number">{post.comment} Commentaires</span>
+            </Link>
           </div>
-          {isOwnerForDelete()}
           {isAdminForDelete()}
+          {isOwnerForDelete()}
         </div>
       </div>
     </>

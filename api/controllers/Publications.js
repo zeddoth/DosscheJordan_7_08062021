@@ -7,12 +7,12 @@ exports.createPublication = (req, res) => {
   // Ont valide la requête
   console.log(req.body);
   if (req.body.title === "") {
-    res.status(401).send({
+    return res.status(401).send({
       message: "Le champ 'Titre' ne peut pas être vide",
     });
   }
   if (!req.file && req.body.content === "") {
-    res.status(401).send({
+    return res.status(401).send({
       message: "Le champ 'Contenu' ne peut pas être vide sans image",
     });
   }
@@ -20,7 +20,7 @@ exports.createPublication = (req, res) => {
   db.Publications.create({
     title: req.body.title,
     content: req.body.content,
-    attachment: req.file ? req.file.filename : null,
+    attachment: req.file ? ` ${req.protocol}://${req.get("host")}/uploads/${req.file.filename}` : null,
     UserId: getIdUser(req),
   })
 
@@ -36,14 +36,21 @@ exports.createPublication = (req, res) => {
 
 // Ont récupère les publications par l'ID de l'auteur
 exports.getPublicationByAuthor = (req, res) => {
-  const authorID = req.params.UserId;
+  const authorID = req.params.id;
   db.Publications.findAll({
-    where: authorID,
+    where: { UserId: authorID },
     order: [["createdAt", "DESC"]],
     include: [
       {
         model: db.Users,
         attributes: ["username", "roles", "profileImage", "id"],
+      },
+      {
+        model: db.PublicationsLikes,
+        required: false,
+        where: { userId: getIdUser(req) },
+        nest: true,
+        attributes: ["state", "UserId"],
       },
     ],
   })
@@ -58,7 +65,7 @@ exports.getPublicationByAuthor = (req, res) => {
 };
 
 // Ont récupère une publication par son ID
-exports.getOnePublication = (req, res) => {
+exports.getOnePublication = async (req, res) => {
   const paramsId = req.params.id;
 
   db.Publications.findByPk(paramsId, {
@@ -68,6 +75,13 @@ exports.getOnePublication = (req, res) => {
       {
         model: db.Users,
         attributes: ["username", "roles", "profileImage", "id"],
+      },
+      {
+        model: db.PublicationsLikes,
+        required: false,
+        where: { userId: getIdUser(req) },
+        nest: true,
+        attributes: ["state", "UserId"],
       },
       {
         model: db.Comments,
@@ -93,13 +107,20 @@ exports.getOnePublication = (req, res) => {
 };
 
 // Ont récupère toutes les publications disponnibles en base de données
-exports.getAllPublications = (req, res) => {
+exports.getAllPublications = async (req, res) => {
   db.Publications.findAll({
     order: [["createdAt", "DESC"]],
     include: [
       {
         model: db.Users,
         attributes: ["username", "roles", "profileImage"],
+      },
+      {
+        model: db.PublicationsLikes,
+        required: false,
+        where: { userId: getIdUser(req) },
+        nest: true,
+        attributes: ["state", "UserId"],
       },
     ],
   })
@@ -114,25 +135,34 @@ exports.getAllPublications = (req, res) => {
 };
 
 // Ont supprime une publication par son ID
-exports.deleteOnePublication = (req, res) => {
-  const paramsId = req.params.id;
-  const post = db.Publications.findByPk(paramsId);
-  const filename = post.attachment;
-  console.log(filename);
+exports.deleteOnePublication = async (req, res) => {
   try {
-    fs.unlink(`../client/src/styles/medias/uploaded/${filename}`, () => {
+    const paramsId = req.params.id;
+    const post = await db.Publications.findByPk(paramsId);
+    const deletePublication = () => {
       db.Publications.destroy({
         where: { id: paramsId },
         UserId: getIdUser(req),
       });
-    }).then(() => {
-      return res.status(200).send({
-        message: "La publication à été supprimer avec succès!",
+      db.PublicationsLikes.destroy({
+        where: { PublicationId: paramsId },
+        UserId: getIdUser(req),
       });
+    };
+    if (post.attachment === null) {
+      deletePublication();
+    } else {
+      const filename = post.attachment.split("/uploads/")[1];
+      fs.unlink(`uploads/${filename}`, () => {
+        deletePublication();
+      });
+    }
+    return res.status(200).send({
+      message: "La publication à été supprimer avec succès!",
     });
   } catch (e) {
     return res.status(500).send({
-      message: "La publication avec l'id=" + paramsId + "n'a pas plus être supprimer",
+      message: "La publication avec n'a pas plus être supprimer",
     });
   }
 };
@@ -232,43 +262,32 @@ exports.dislikePublication = async (req, res) => {
 
 // ADMIN
 
-// Ont supprime toutes les publications disponnibles en BDD
-exports.AdminDeleteAll = (req, res) => {
-  db.Publications.destroy({
-    where: {},
-    truncate: false,
-  })
-    .then((nums) => {
-      res.status(200).send({ message: `${nums} publications ont été supprimé` });
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: err.message || "Une erreur à été rencontré lors de la suppresions des publications",
-      });
-    });
-};
-
 // Ont supprime une publication par son ID
-exports.AdminDeleteOnePublication = (req, res) => {
-  const paramsId = req.params.id;
-
-  db.Publications.destroy({
-    where: { id: paramsId },
-  })
-    .then((num) => {
-      if (num == 1) {
-        res.status(200).send({
-          message: "La publication à été supprimer avec succès!",
-        });
-      } else {
-        res.status(404).send({
-          message: `La publication avec l'id=${paramsId} ne peut être supprimer. Peut-être que la publication n'a pas été trouvé!`,
-        });
-      }
-    })
-    .catch(() => {
-      res.status(500).send({
-        message: "La publication avec l'id=" + paramsId + "n'a pas plus être supprimer",
+exports.AdminDeleteOnePublication = async (req, res) => {
+  try {
+    const paramsId = req.params.id;
+    const post = await db.Publications.findByPk(paramsId);
+    const deletePublication = () => {
+      db.Publications.destroy({
+        where: { id: paramsId },
       });
+      db.PublicationsLikes.destroy({
+        where: { PublicationId: paramsId },
+      });
+    };
+    if (post.attachment === null) {
+      deletePublication();
+    } else {
+      const filename = post.attachment.split("/uploads/")[1];
+      fs.unlink(`uploads/${filename}`, () => {
+        deletePublication();
+      });
+      console.log("ITS OKAY NOW");
+    }
+  } catch (e) {
+    console.log(e);
+    return res.status(500).send({
+      message: "La publication avec n'a pas plus être supprimer",
     });
+  }
 };

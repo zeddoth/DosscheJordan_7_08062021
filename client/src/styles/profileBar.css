@@ -5,7 +5,7 @@
   align-items: center;
   box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.16);
   height: 250px;
-  margin-top: 40px;
+  margin-top: 200px;
   padding-left: 20%;
   padding-right: 20%;
   position: relative;
@@ -52,7 +52,7 @@
   font-size: 20px;
 }
 .profileBar_box_activities p:nth-child(1) {
-  margin-right: 1rem;
+  margin-right: 5px;
 }
 
 .profileBar_box_register p {

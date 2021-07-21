@@ -4,7 +4,7 @@ import ReactTooltip from "react-tooltip";
 import "../styles/navbar.css";
 import logo from "../styles/medias/logo-only.png";
 
-const Navbar = ({ owner, userImage = "defaultProfile.png" }) => {
+const Navbar = ({ owner, userImage }) => {
   const disconnect = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
@@ -36,11 +36,7 @@ const Navbar = ({ owner, userImage = "defaultProfile.png" }) => {
             </Link>
           </div>
           <div className="navbar_profile">
-            <img
-              className="navbar_profile_image"
-              src={require(`../styles/medias/uploaded/${userImage}`).default}
-              alt={`Avatar de  ${owner}`}
-            />
+            <img className="navbar_profile_image" src={userImage} alt={`Avatar de  ${owner}`} />
             <Link to="/login">
               <i className="fas fa-times-circle navbar_profile_disconnect" onClick={disconnect} title="Deconnexion"></i>
             </Link>

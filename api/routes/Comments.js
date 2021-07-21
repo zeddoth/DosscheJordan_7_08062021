@@ -6,16 +6,10 @@ module.exports = (app) => {
   const router = express.Router();
 
   router.get("/comments/:id", auth, commentController.getComments);
-  router.post("/comments/:PublicationId", auth, commentController.createComment);
+  router.post("/comments/:id", auth, commentController.createComment);
   router.delete("/comments/:id", auth, commentController.deleteComment);
 
   //ROUTES ADMIN
-  router.delete(
-    "admin/comments/:PublicationId/all",
-    auth,
-    isAdmin,
-    commentController.AdminDeleteAllComments
-  );
   router.delete("/admin/comments/:id", auth, isAdmin, commentController.adminDeleteComment);
 
   app.use("/api", router);

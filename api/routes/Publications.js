@@ -15,7 +15,6 @@ module.exports = (app) => {
   router.put("/posts/:id/dislike", auth, publicationController.dislikePublication);
 
   // ROUTES ADMIN
-  router.delete("/admin/posts", auth, isAdmin, publicationController.AdminDeleteAll);
   router.delete("/admin/posts/:id", auth, isAdmin, publicationController.AdminDeleteOnePublication);
   app.use("/api", router);
 };

@@ -25,10 +25,13 @@ const CreatePublication = ({ setUpdate, update }) => {
           Authorization: `Bearer ${token}`,
         },
       })
-      .then(function (response) {
-        console.log(response);
+      .then((response) => {
+        console.log(response.data);
+        setTitle("");
+        setContent("");
+        setAttachment(null);
       })
-      .catch(function (error) {
+      .catch((error) => {
         console.log(error);
       });
     setUpdate(update + 1);

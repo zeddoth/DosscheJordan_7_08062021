@@ -3,45 +3,41 @@ const getIdUser = require("../utils/decodeToken");
 
 // Ont créé un commentaire par rapport à l'ID de la publication
 exports.createComment = async (req, res) => {
-  const PublicationId = req.params.PublicationId;
-  const comment = {
-    content: req.body.content,
-    UserId: getIdUser(req),
-    PublicationId: PublicationId,
-    attachment: req.body.attachment,
-  };
-
-  console.log(comment);
-  await db.Comments.create(comment, { where: { PublicationId: PublicationId } })
-    .then((data) => {
-      res.send({ data: data, message: "Commentaire publié avec succès" });
-    })
-    .catch(() => {
-      res.status(400).send({ message: "Une erreur à été rencontré lors de la publication du commentaire" });
-    });
-  const countComment = async () => {
-    const commentAmount = {
-      comment: await db.Comments.count({
-        where: {
-          publicationId: PublicationId,
-        },
-      }),
+  try {
+    const paramsId = req.params.id;
+    const comment = {
+      content: req.body.content,
+      UserId: getIdUser(req),
+      PublicationId: paramsId,
     };
-    return commentAmount;
-  };
-  db.Publications.update(await countComment(), { where: { id: PublicationId } });
+    console.log(comment);
+    await db.Comments.create(comment)
+      .then((data) => {
+        res.send(data);
+      })
+      .catch((err) => {
+        res.status(500).send({
+          message: err.message || "Une erreur à été rencontré lors de la création de la publication",
+        });
+      });
+    await db.Publications.increment({ comment: 1 }, { where: { id: paramsId } });
+    return res.status(200).send({ message: "Commentaire publié avec succès" });
+  } catch (err) {
+    console.log(err.message);
+    return res.status(500).send({ message: " Une erreur à été rencontré lors de la publication du commentaire" });
+  }
 };
 
 // Ont récupère les commentaire par rapport à l'ID de la publication
 exports.getComments = (req, res) => {
-  const PublicationId = req.params.PublicationId;
+  const paramsId = req.params.id;
   db.Comments.findAll({
     order: [["createdAt", "DESC"]],
-    where: PublicationId,
+    where: { PublicationID: paramsId },
     include: [
       {
         model: db.Users,
-        attributes: ["username"],
+        attributes: ["username", "profileImage"],
       },
     ],
   })
@@ -51,70 +47,36 @@ exports.getComments = (req, res) => {
     .catch(() => {
       res.status(500).send({
         message:
-          "Une erreur à été rencontré lors de la récupération des commentaire de la publication avec l'id=" +
-          PublicationId,
+          "Une erreur à été rencontré lors de la récupération des commentaire de la publication avec l'id=" + paramsId,
       });
     });
 };
 
 // Ont supprime un commentaire par son ID
-exports.deleteComment = (req, res) => {
-  const paramsId = req.params.id;
-  db.Comments.destroy({ where: { id: paramsId, userId: getIdUser(req) } })
-    .then((num) => {
-      if (num == 1) {
-        res.status(200).send({
-          message: "Le commentaire à été supprimer avec succès!",
-        });
-      } else {
-        res.status(401).send({
-          message: `Le commentaire avec l'id=${paramsId} ne peut être supprimer. Peut-être que le commentaire n'a pas été trouvé!`,
-        });
-      }
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: "Le commentaire avec l'id=" + paramsId + "n'a pas pu être supprimer",
-      });
-    });
+exports.deleteComment = async (req, res) => {
+  try {
+    const paramsId = req.params.id;
+    const comment = await db.Comments.findOne({ where: { id: paramsId } });
+    await db.Comments.destroy({ where: { id: paramsId, userId: getIdUser(req) } });
+    await db.Publications.decrement({ comment: 1 }, { where: { id: comment.PublicationId } });
+    return res.status(200).send({ message: "Le commentaire à été supprimer avec succès!" });
+  } catch (err) {
+    console.log(err.message);
+    return res.status(500).send({ message: "Le commentaire n'a pas plus être supprimer " });
+  }
 };
 
 // ADMIN
-// Ont supprimer les commentaires d'une publication
-exports.AdminDeleteAllComments = (req, res) => {
-  const PublicationId = req.params.PublicationId;
-  db.Comments.destroy({
-    where: { PublicationId: PublicationId },
-    truncate: false,
-  })
-    .then((nums) => {
-      res.status(200).send({ message: `${nums} commentaires ont été supprimés` });
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: err.message || "Une erreur à été rencontré lors de la suppresions des commentaires",
-      });
-    });
-};
-
 // Ont supprime un commentaire par son ID
-exports.adminDeleteComment = (req, res) => {
-  const paramsId = req.params.id;
-  db.Comments.destroy({ where: { id: paramsId } })
-    .then((num) => {
-      if (num == 1) {
-        res.status(200).send({
-          message: "Le commentaire à été supprimer avec succès!",
-        });
-      } else {
-        res.status(401).send({
-          message: `Le commentaire avec l'id=${paramsId} ne peut être supprimer. Peut-être que le commentaire n'a pas été trouvé!`,
-        });
-      }
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: "Le commentaire avec l'id=" + paramsId + "n'a pas pu être supprimer",
-      });
-    });
+exports.adminDeleteComment = async (req, res) => {
+  try {
+    const paramsId = req.params.id;
+    const comment = await db.Comments.findOne({ where: { id: paramsId } });
+    await db.Comments.destroy({ where: { id: paramsId } });
+    await db.Publications.decrement({ comment: 1 }, { where: { id: comment.PublicationId } });
+    return res.status(200).send({ message: "Le commentaire à été supprimer avec succès!" });
+  } catch (err) {
+    console.log(err.message);
+    return res.status(500).send({ message: "Le commentaire n'a pas plus être supprimer " });
+  }
 };

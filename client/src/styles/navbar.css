@@ -26,6 +26,8 @@
   font-size: 80px;
   border-radius: 100%;
   height: 80px;
+  width: 80px;
+  object-fit: cover;
 }
 .navbar_profile_disconnect {
   position: absolute;

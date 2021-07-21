@@ -3,7 +3,6 @@
 }
 .publications_box {
   margin: 100px 20%;
-  z-index: -1;
 }
 h2 {
   margin: 0;
@@ -23,6 +22,7 @@ h2 {
   padding: 10px 60px;
   box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.16);
   position: relative;
+  z-index: 1;
 }
 .publication a {
   color: black;
@@ -30,11 +30,12 @@ h2 {
 }
 .publication_profile-image {
   height: 80px;
-  width: auto;
+  width: 80px;
   border-radius: 100%;
   position: absolute;
   top: -40px;
   left: -40px;
+  object-fit: cover;
 }
 .publication_profile-role {
   top: 15px;
@@ -98,6 +99,7 @@ h2 {
   margin-bottom: 10px;
 }
 .publication_delete-icon {
+  transition: 0.3s;
   position: absolute;
   bottom: -15px;
   right: -15px;
@@ -106,19 +108,20 @@ h2 {
   justify-content: center;
   border: 1px rgba(0, 0, 0, 0.25) solid;
   border-radius: 100%;
-  background-color: #b87474;
+  background-color: rgb(228, 228, 228);
   height: 30px;
   width: 30px;
-  max-width: 30px;
-  max-height: 30px;
+  min-width: 30px;
+  min-height: 30px;
   font-size: 18px;
-  color: white;
 }
 .publication_delete-icon:hover {
-  background-color: red;
+  transition: 0.3s;
+  color: white;
+  background-color: rgb(192, 82, 82);
 }
 .publication_delete-icon:active {
-  background-color: red;
+  background-color: rgb(0, 0, 0);
 }
 .icon {
   font-size: 18px;

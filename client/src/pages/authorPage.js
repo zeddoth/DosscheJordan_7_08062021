@@ -2,30 +2,28 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import Navbar from "../components/navbar";
 import Publication from "../components/publication";
-import CreatePublication from "../components/createPublication";
+import ProfileBar from "../components/profileBar";
 import "../styles/home.css";
 
-const Home = () => {
-  const [post, setPost] = useState([]);
+const authorPage = () => {
+  const [postAuthor, setPostAuthor] = useState([]);
   const [user, setUser] = useState({});
   const removePublication = (publicationId) => {
-    setPost(post.filter((p) => p.id !== publicationId));
+    setPostAuthor(postAuthor.filter((p) => p.id !== publicationId));
   };
-
-  const [updatePost, setUpdatePost] = useState(0);
 
   useEffect(() => {
     const token = JSON.parse(localStorage.getItem("token")).value;
     const userId = JSON.parse(localStorage.getItem("userId")).value;
     axios
-      .get("http://localhost:8080/api/posts", {
+      .get(`http://localhost:8080/api/posts/author/${userId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
       .then((response) => {
         console.log(response.data);
-        setPost(response.data);
+        setPostAuthor(response.data);
       })
       .catch((error) => {
         console.log(error);
@@ -43,14 +41,14 @@ const Home = () => {
       .catch((error) => {
         console.log(error);
       });
-  }, [updatePost]);
+  }, []);
 
   return (
     <>
       <Navbar owner={user.username} userImage={user.profileImage} />;
-      <CreatePublication setUpdate={setUpdatePost} update={updatePost} />
+      <ProfileBar user={user} owner={postAuthor.UserId} />
       <div className="all-publications">
-        {post.map((postContent) => {
+        {postAuthor.map((postContent) => {
           return (
             <Publication
               key={postContent.id}
@@ -66,4 +64,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default authorPage;
