@@ -47,7 +47,7 @@ const Home = () => {
 
   return (
     <>
-      <Navbar owner={user.username} userImage={user.profileImage} />;
+      <Navbar owner={user.username} userImage={user.profileImage} userConnected={user} />;
       <CreatePublication setUpdate={setUpdatePost} update={updatePost} />
       <div className="all-publications">
         {post.map((postContent) => {

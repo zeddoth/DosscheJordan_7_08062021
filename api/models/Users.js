@@ -21,9 +21,8 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(255),
     },
     profileImage: {
-      allowNull: false,
+      allowNull: true,
       type: DataTypes.STRING(255),
-      defaultValue: `defaultProfile.png`,
     },
     email: {
       unique: true,

@@ -7,11 +7,13 @@ import "moment/locale/fr";
 import { useHistory, useParams } from "react-router";
 
 const Publication = ({ post, remove, rolesCurrentUser, userConnected }) => {
+  const profileImgRoute = post.User.profileImage
+    ? post.User.profileImage
+    : require("../styles/medias/defaultProfile.png").default;
   const token = JSON.parse(localStorage.getItem("token")).value;
   const UserId = JSON.parse(localStorage.getItem("userId")).value;
   const redirectToHome = useHistory();
   let { idPost } = useParams();
-  const profileImgRoute = post.User.profileImage ?? "defaultProfile.png";
   const [like, setLike] = useState(post.like);
   const [dislike, setDislike] = useState(post.dislike);
   const [likeOrDislike, setLikeOrDislike] = useState(

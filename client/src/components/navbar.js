@@ -4,7 +4,8 @@ import ReactTooltip from "react-tooltip";
 import "../styles/navbar.css";
 import logo from "../styles/medias/logo-only.png";
 
-const Navbar = ({ owner, userImage }) => {
+const Navbar = ({ owner, userImage, userConnected }) => {
+  const imgUrl = userImage ? userImage : require("../styles/medias/defaultProfile.png").default;
   const disconnect = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
@@ -28,7 +29,7 @@ const Navbar = ({ owner, userImage }) => {
                 <span>Retourner à l'accueil</span>
               </ReactTooltip>
             </Link>
-            <Link to="/profile/edit">
+            <Link to={{ pathname: `/edit`, state: { userConnected } }}>
               <i className="fas fa-cog navbar_button_box_icon" title="Modifier le profil" data-tip data-for="edit"></i>
               <ReactTooltip id="edit" place="bottom" effect="solid">
                 <span>Modifier le Profil</span>
@@ -36,7 +37,9 @@ const Navbar = ({ owner, userImage }) => {
             </Link>
           </div>
           <div className="navbar_profile">
-            <img className="navbar_profile_image" src={userImage} alt={`Avatar de  ${owner}`} />
+            <Link to="/author">
+              <img className="navbar_profile_image" src={imgUrl} alt={`Avatar de  ${owner}`} />
+            </Link>
             <Link to="/login">
               <i className="fas fa-times-circle navbar_profile_disconnect" onClick={disconnect} title="Deconnexion"></i>
             </Link>

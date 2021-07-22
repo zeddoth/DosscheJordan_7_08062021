@@ -97,17 +97,15 @@ exports.deleteUser = (req, res) => {
 
 // Ont complète le profile par son ID
 exports.editUser = (req, res) => {
-  if (!req.body.email || !req.body.lastName || !req.body.firstName || !req.body.job || !req.body.birthday) {
+  if (!req.body.lastName || !req.body.firstName || !req.body.job) {
     res.status(400).send({
       message: "Un ou plusieurs champs sont vide",
     });
   }
   const edit = {
-    email: req.body.email,
     lastName: req.body.lastName,
     firstName: req.body.firstName,
     job: req.body.job,
-    birthday: req.body.birthday,
   };
   db.Users.update(edit, { where: { id: getIdUser(req) } })
     .then(() => {
@@ -126,21 +124,19 @@ exports.editPassword = (req, res) => {
   bcrypt
     .hash(req.body.password, 10)
     .then((hash) => {
-      db.Users.update({ password: hash }, { where: { id: getUserId(req) } });
-    })
-    .then(() => {
+      db.Users.update({ password: hash }, { where: { id: getIdUser(req) } });
       res.status(201).send({ message: "Mot de passe modifié avec succès" });
     })
     .catch(() => {
       res.status(500).send({ message: "Une erreur à été rencontré lors de la modification du mot de passe" });
     });
 };
-
 // Ont modifie l'image de profile de l'utilisateur
 exports.editProfileImage = (req, res) => {
+  console.log(req);
   db.Users.update(
     {
-      profileImage: `../assets/profileImages/${req.file.filename}`,
+      profileImage: req.file ? ` ${req.protocol}://${req.get("host")}/uploads/profileImage/${req.file.filename}` : null,
     },
     { where: { id: getIdUser(req) } }
   )
@@ -151,6 +147,20 @@ exports.editProfileImage = (req, res) => {
       res.status(500).send({ message: "Une erreur à été rencontré lors de la requête" });
     });
 };
+// exports.editProfileImage = async (req, res) => {
+
+//   try {
+//     await db.Users.update(
+//       {
+//         profileImage: req.file ? ` ${req.protocol}://${req.get("host")}/uploads/${req.file.filename}` : null,
+//       },
+//       { where: { id: getIdUser(req) } }
+//     );
+//     return res.status(200).send({ message: "Image modifié avec succès" });
+//   } catch (err) {
+//     return res.status(500).send({ message: "Une erreur à été rencontré lors de l'envoie de l'image" });
+//   }
+// };
 
 // Ont récupère les information du profile par son ID
 exports.getUser = (req, res) => {

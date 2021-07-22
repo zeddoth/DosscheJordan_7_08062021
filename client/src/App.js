@@ -3,6 +3,7 @@ import Signup from "./pages/signup";
 import Home from "./pages/home";
 import onePagePublication from "./pages/onePagePublication";
 import authorPage from "./pages/authorPage";
+import editProfile from "./pages/editProfile";
 import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
 import "./styles/app.css";
 
@@ -47,6 +48,7 @@ function App() {
         <Route path="/publication:idPost" exact component={onePagePublication} />
         <Route path="/publication" component={onePagePublication} />
         <Route path="/author" component={authorPage} />
+        <Route path="/edit" component={editProfile} />
         <PrivateRoute path="/" exact component={Home} on />
       </Router>
     </div>

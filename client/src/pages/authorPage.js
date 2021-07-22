@@ -5,7 +5,7 @@ import Publication from "../components/publication";
 import ProfileBar from "../components/profileBar";
 import "../styles/home.css";
 
-const authorPage = () => {
+const AuthorPage = () => {
   const [postAuthor, setPostAuthor] = useState([]);
   const [user, setUser] = useState({});
   const removePublication = (publicationId) => {
@@ -64,4 +64,4 @@ const authorPage = () => {
   );
 };
 
-export default authorPage;
+export default AuthorPage;

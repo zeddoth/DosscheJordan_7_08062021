@@ -1,0 +1,150 @@
+.edit_box {
+  background-color: #47768e85;
+  border-radius: 10px;
+  display: flex;
+  margin-left: 10%;
+  margin-right: 10%;
+  margin-top: 200px;
+  padding: 50px;
+  column-gap: 50px;
+}
+.edit_box-row {
+  display: flex;
+  column-gap: 50px;
+}
+.edit_box-column {
+  display: flex;
+  flex-direction: column;
+}
+.edit_box_profileImage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  width: 410px;
+}
+.edit_box_profileImage p {
+  font-size: 25px;
+  margin-bottom: 35px;
+}
+.edit_box_profileImage_src {
+  position: relative;
+}
+.edit_box_profileImage_srcImg {
+  height: 250px;
+  width: 250px;
+  object-fit: cover;
+  border-radius: 100%;
+}
+.send-img {
+  bottom: 0;
+  right: -10px;
+}
+.valid-img {
+  bottom: -25px;
+  right: -40px;
+}
+.big {
+  font-size: 35px;
+  position: absolute;
+}
+.big:hover {
+  transition: 0.3s;
+  filter: drop-shadow(0px 0px 5px white);
+}
+.big:active {
+  color: white;
+}
+.column {
+  display: flex;
+  flex-direction: column;
+}
+.margin15 {
+  margin-right: 15px;
+}
+.edit_box_infos {
+  display: flex;
+  width: 460px;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.inputbox {
+  height: 65px;
+  border-radius: 10px;
+  margin-bottom: 40px;
+  border: solid 1px #4d93b4;
+  font-size: 24px;
+  padding-left: 10px;
+}
+.labelbox {
+  margin-bottom: 10px;
+}
+.edit_box_infos_input {
+  font-size: 20px;
+}
+.edit_box_password {
+  width: 460px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.edit_box_password_warning {
+  padding: 20px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-color: rgba(255, 255, 255, 0.35);
+  margin-bottom: 20px;
+  border: 1px solid #707070;
+}
+.edit_box_warning {
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-color: rgba(255, 255, 255, 0.35);
+  border: 1px solid #707070;
+}
+.edit_box_password_input {
+  font-size: 20px;
+}
+.edit_box_buttons {
+  display: flex;
+  column-gap: 30px;
+  justify-content: flex-end;
+}
+
+.button {
+  transition: 0.3s;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: large;
+  border-radius: 20px;
+  border: 3px solid rgba(0, 0, 0, 0.25);
+  height: 50px;
+  -webkit-box-shadow: 0px 3px 10px 5px rgba(0, 0, 0, 0.16);
+  box-shadow: 0px 3px 10px 5px rgba(0, 0, 0, 0.16);
+  padding-left: 15px;
+  padding-right: 15px;
+}
+.yellow-button {
+  background-color: #c1b164;
+}
+.yellow-button:hover {
+  background-color: #f1de7c;
+}
+.green-button {
+  background-color: #61c275;
+}
+.green-button:hover {
+  background-color: #82ff9b;
+}
+.blue-button {
+  background-color: #50afdf;
+}
+.blue-button:hover {
+  background-color: #5ec9ff;
+}

@@ -10,7 +10,7 @@ module.exports = (req, res, next) => {
     })
     .catch(() => {
       res.status(500).send({
-        message: "L'utilisateur n'est pas admin ce chien!",
+        message: "L'utilisateur n'est pas administrateur!",
       });
     });
 };
