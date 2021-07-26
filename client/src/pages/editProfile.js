@@ -12,9 +12,9 @@ const EditProfile = () => {
     : require("../styles/medias/defaultProfile.png").default;
   const token = JSON.parse(localStorage.getItem("token")).value;
   const userId = JSON.parse(localStorage.getItem("userId")).value;
-  const [lastname, setLastname] = useState("");
-  const [firstname, setFirstname] = useState("");
-  const [job, setJob] = useState("");
+  const [lastname, setLastname] = useState(user.lastName ? user.lastName : "");
+  const [firstname, setFirstname] = useState(user.firstName ? user.firstName : "");
+  const [job, setJob] = useState(user.job ? user.job : "");
   const [password, setPassword] = useState("");
   const [rePassword, setRePassword] = useState("");
   const [profileImage, setProfileImage] = useState(null);
@@ -108,7 +108,7 @@ const EditProfile = () => {
 
   return (
     <>
-      <Navbar owner={user.username} userImage={user.profileImage} />;
+      <Navbar userConnected={user} />;
       <div className="edit_box column">
         <div className="edit_box-row">
           <div className="edit_box_profileImage">
@@ -196,7 +196,14 @@ const EditProfile = () => {
               <label forhtml="job" className="labelbox">
                 <i className="fas fa-briefcase margin15"></i>Profession :
               </label>
-              <input type="text" name="job" id="job" className="inputbox" onChange={(e) => setJob(e.target.value)} />
+              <input
+                type="text"
+                name="job"
+                id="job"
+                className="inputbox"
+                value={job}
+                onChange={(e) => setJob(e.target.value)}
+              />
             </div>
           </div>
         </div>

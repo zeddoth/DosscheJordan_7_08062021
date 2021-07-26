@@ -5,6 +5,9 @@ import "../styles/writeComment.css";
 const WriteComment = ({ post, setComments, comments, user }) => {
   const token = JSON.parse(localStorage.getItem("token")).value;
   const [commentInput, setCommentInput] = useState("");
+  const profileImgRoute = user.profileImage
+    ? user.profileImage
+    : require("../styles/medias/defaultProfile.png").default;
   const postComment = (e) => {
     e.preventDefault();
     axios
@@ -36,7 +39,7 @@ const WriteComment = ({ post, setComments, comments, user }) => {
           <div className="publication_comments_create_box-img">
             <img
               className="publication_comments_create_profileimg"
-              src={user.profileImage}
+              src={profileImgRoute}
               alt={`Avatar de  ${user.username}`}
             ></img>
           </div>

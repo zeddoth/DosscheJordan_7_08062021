@@ -63,6 +63,7 @@ h2 {
 .publication_like_comments hr {
   margin-top: 10px;
   margin-bottom: 10px;
+  z-index: -5;
 }
 .publication_content {
   max-height: 10rem;
@@ -97,6 +98,7 @@ h2 {
 .publication_content hr {
   margin-top: 10px;
   margin-bottom: 10px;
+  z-index: -5;
 }
 .publication_delete-icon {
   transition: 0.3s;
@@ -320,5 +322,41 @@ p {
   75% {
     -webkit-transform: translateY(-3px) rotate(1.2deg);
     transform: translateY(-3px) rotate(1.2deg);
+  }
+}
+
+@media screen and (max-width: 800px) {
+  .publication {
+    padding: 10px;
+  }
+  .publications_box {
+    margin: 20px 0px;
+  }
+  .publication_profile-image {
+    height: 50px;
+    width: 50px;
+    top: 5px;
+    left: 5px;
+  }
+  .publication_date {
+    margin-left: 50px;
+  }
+  .publication_profile-role {
+    width: 15px;
+    height: 15px;
+    font-size: 10px;
+    z-index: 5;
+    left: 40px;
+    top: 40px;
+  }
+  .publication_content h2 {
+    margin-top: 20px;
+  }
+  .publication_delete-icon {
+    right: 5px;
+    bottom: 5px;
+  }
+  .one-publication {
+    margin-top: 170px;
   }
 }

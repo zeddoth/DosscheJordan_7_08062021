@@ -8,7 +8,7 @@ import axios from "axios";
 
 const OnePagePublication = () => {
   const post = useLocation().state.post;
-  const user = useLocation().state.userConnected;
+  const userConnected = useLocation().state.userConnected;
   const [comments, setComments] = useState([]);
   const removeComments = (commentId) => {
     setComments(comments.filter((p) => p.id !== commentId));
@@ -33,18 +33,18 @@ const OnePagePublication = () => {
 
   return (
     <>
-      <Navbar owner={user.username} userImage={user.profileImage} />
+      <Navbar userConnected={userConnected} />
       <div className="one-publication">
-        <Publication post={post} rolesCurrentUser={user.roles} />
-        <WriteComment user={user} post={post} setComments={setComments} comments={comments} />
+        <Publication post={post} rolesCurrentUser={userConnected.roles} userConnected={userConnected} />
+        <WriteComment user={userConnected} post={post} setComments={setComments} comments={comments} />
         <div className="comment_box">
           {comments.map((commentContent) => {
             return (
               <Comment
                 key={commentContent.id}
-                rolesCurrentUser={user.roles}
+                rolesCurrentUser={userConnected.roles}
                 commentContent={commentContent}
-                userConnected={user}
+                userConnected={userConnected}
                 remove={removeComments}
               />
             );

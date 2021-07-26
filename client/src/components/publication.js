@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import "../styles/publication.css";
 import Moment from "react-moment";
 import "moment/locale/fr";
@@ -57,7 +57,6 @@ const Publication = ({ post, remove, rolesCurrentUser, userConnected }) => {
     } catch (e) {}
   };
   const adminDeletePublication = async () => {
-    const token = JSON.parse(localStorage.getItem("token")).value;
     try {
       if (!idPost) remove(post.id);
       if (idPost) redirectToHome.push("/");
@@ -159,11 +158,18 @@ const Publication = ({ post, remove, rolesCurrentUser, userConnected }) => {
       <div className="publications_box bounce">
         <div className="publication">
           <div className="publication_profile">
-            <img
-              className="publication_profile-image"
-              src={profileImgRoute}
-              alt={`Avatar de  ${post.User.username}`}
-            ></img>
+            <Link
+              to={{ pathname: `/profile?id=${post.UserId}`, state: { post, userConnected } }}
+              onClick={() => {
+                window.location.href = `/profile?id=${post.UserId}`;
+              }}
+            >
+              <img
+                className="publication_profile-image"
+                src={profileImgRoute}
+                alt={`Avatar de  ${post.User.username}`}
+              ></img>
+            </Link>
             {isAdmin()}
           </div>
           <div className="publication_date">

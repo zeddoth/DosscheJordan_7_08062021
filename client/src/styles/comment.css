@@ -97,3 +97,14 @@
     opacity: 1;
   }
 }
+
+@media screen and (max-width: 800px) {
+  .comment_box {
+    margin-left: 0;
+    margin-right: 0;
+    padding: 5px;
+  }
+  .comment_box_content-delete {
+    margin-left: 5px;
+  }
+}

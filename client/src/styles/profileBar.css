@@ -62,3 +62,30 @@
   top: 15px;
   right: 20%;
 }
+
+@media screen and (max-width: 800px) {
+  .profileBar_box {
+    padding: 10px 20%;
+    flex-direction: column;
+    height: 100%;
+    margin-top: 150px;
+  }
+  .profileBar_box_activities p {
+    font-weight: 800;
+  }
+  .profileBar_box_register {
+    order: 2;
+  }
+  .profileBar_box_register p {
+    position: relative;
+    bottom: 0;
+    right: 0;
+    padding: 1rem;
+  }
+  .profileBar_box_activities {
+    position: relative;
+    bottom: 0;
+    right: 0;
+    padding: 1rem;
+  }
+}

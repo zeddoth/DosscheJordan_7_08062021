@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const db = require("../models");
+const fs = require("fs");
 require("dotenv").config();
 const randomToken = process.env.TOKEN;
 const getIdUser = require("../utils/decodeToken");
@@ -132,36 +133,43 @@ exports.editPassword = (req, res) => {
     });
 };
 // Ont modifie l'image de profile de l'utilisateur
-exports.editProfileImage = (req, res) => {
-  console.log(req);
-  db.Users.update(
+exports.editProfileImage = async (req, res) => {
+  const user = await db.Users.findByPk(getIdUser(req));
+  const updateProfileImage = () => {
+    db.Users.update(
+      {
+        profileImage: req.file
+          ? ` ${req.protocol}://${req.get("host")}/uploads/profileImage/${req.file.filename}`
+          : null,
+      },
+      {
+        where: { id: getIdUser(req) },
+      }
+    )
+      .then(() => {
+        res.status(200).send({ message: "Image modifié avec succès" });
+      })
+      .catch(() => {
+        res.status(500).send({ message: "Une erreur à été rencontré lors de la requête" });
+      });
+  };
+  const filename = () => {
     {
-      profileImage: req.file ? ` ${req.protocol}://${req.get("host")}/uploads/profileImage/${req.file.filename}` : null,
-    },
-    { where: { id: getIdUser(req) } }
-  )
-    .then(() => {
-      res.status(200).send({ message: "Image modifié avec succès" });
-    })
-    .catch(() => {
-      res.status(500).send({ message: "Une erreur à été rencontré lors de la requête" });
+      if (filename === null) {
+        return;
+      } else {
+        user.profileImage.split("/uploads/profileImage")[1];
+      }
+    }
+  };
+  if (filename === null) {
+    updateProfileImage();
+  } else {
+    fs.unlink(`uploads/profileImage/${filename}`, () => {
+      updateProfileImage();
     });
+  }
 };
-// exports.editProfileImage = async (req, res) => {
-
-//   try {
-//     await db.Users.update(
-//       {
-//         profileImage: req.file ? ` ${req.protocol}://${req.get("host")}/uploads/${req.file.filename}` : null,
-//       },
-//       { where: { id: getIdUser(req) } }
-//     );
-//     return res.status(200).send({ message: "Image modifié avec succès" });
-//   } catch (err) {
-//     return res.status(500).send({ message: "Une erreur à été rencontré lors de l'envoie de l'image" });
-//   }
-// };
-
 // Ont récupère les information du profile par son ID
 exports.getUser = (req, res) => {
   const paramsId = req.params.id;

@@ -4,8 +4,11 @@ import Navbar from "../components/navbar";
 import Publication from "../components/publication";
 import ProfileBar from "../components/profileBar";
 import "../styles/home.css";
+import { useLocation } from "react-router";
 
-const AuthorPage = () => {
+const AuthorPage = ({}) => {
+  const author = useLocation().state.post;
+  const userConnected = useLocation().state.userConnected;
   const [postAuthor, setPostAuthor] = useState([]);
   const [user, setUser] = useState({});
   const removePublication = (publicationId) => {
@@ -13,40 +16,72 @@ const AuthorPage = () => {
   };
 
   useEffect(() => {
-    const token = JSON.parse(localStorage.getItem("token")).value;
     const userId = JSON.parse(localStorage.getItem("userId")).value;
-    axios
-      .get(`http://localhost:8080/api/posts/author/${userId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
-        console.log(response.data);
-        setPostAuthor(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-    axios
-      .get(`http://localhost:8080/api/profile/${userId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
-        setUser(response.data);
-        console.log(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    const token = JSON.parse(localStorage.getItem("token")).value;
+    console.log("PASSE DANS LE USE-EFFECT");
+    if (author === undefined) {
+      console.log("--PASSE DANS LE IF--");
+      axios
+        .get(`http://localhost:8080/api/posts/author/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((response) => {
+          console.log(response.data);
+          setPostAuthor(response.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      axios
+        .get(`http://localhost:8080/api/profile/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((response) => {
+          setUser(response.data);
+          console.log(response.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } else {
+      console.log("--PASSE DANS LE ELSE--");
+      axios
+        .get(`http://localhost:8080/api/posts/author/${author.UserId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((response) => {
+          console.log(response.data);
+          setPostAuthor(response.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      axios
+        .get(`http://localhost:8080/api/profile/${author.UserId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((response) => {
+          setUser(response.data);
+          console.log(response.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
   }, []);
 
   return (
     <>
-      <Navbar owner={user.username} userImage={user.profileImage} />;
-      <ProfileBar user={user} owner={postAuthor.UserId} />
+      <Navbar userConnected={userConnected} />;
+      <ProfileBar user={user} />
       <div className="all-publications">
         {postAuthor.map((postContent) => {
           return (
@@ -55,7 +90,7 @@ const AuthorPage = () => {
               remove={removePublication}
               rolesCurrentUser={user.roles}
               post={postContent}
-              userConnected={user}
+              userConnected={userConnected}
             />
           );
         })}

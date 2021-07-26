@@ -1,6 +1,3 @@
-* {
-  font-family: Bahnschrift, Arial, Helvetica, sans-serif;
-}
 body {
   background: url(../styles/medias/background.jpg) fixed no-repeat;
   background-size: 100%;
@@ -11,7 +8,6 @@ h1 {
 }
 .box label {
   width: 100%;
-  display: inline-block;
   margin-bottom: 10px;
   display: flex;
   align-items: center;
@@ -19,8 +15,6 @@ h1 {
 .box {
   display: flex;
   flex-direction: column;
-  margin-left: auto;
-  margin-right: auto;
   justify-content: center;
   align-items: center;
 }
@@ -46,8 +40,10 @@ h1 {
   background-color: #47768e85;
   padding-top: 75px;
   padding-bottom: 75px;
+  width: 100%;
+
   max-width: 700px;
-  min-width: 700px;
+  min-width: 250px;
   border: solid #52738465;
 }
 .form_box_button {
@@ -125,4 +121,44 @@ input:focus {
   outline: none;
   border: 1px solid rgb(0, 102, 255);
   background-color: rgba(255, 255, 255, 0.8);
+}
+
+@media screen and (max-width: 800px) {
+  .box {
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-bottom: 20px;
+  }
+  .logo {
+    min-width: 250px;
+  }
+  .form_box {
+    padding-top: 50px;
+    padding-bottom: 50px;
+    width: 100%;
+    max-width: 800px;
+    min-width: 250px;
+  }
+  .form_box_input {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 50px;
+    margin-left: 25px;
+    margin-right: 25px;
+  }
+  .input {
+    font-size: medium;
+    height: 40px;
+  }
+  .form_box_button {
+    display: flex;
+    align-items: center;
+    width: 75%;
+    row-gap: 25px;
+    flex-direction: column;
+    margin-left: auto;
+    margin-right: auto;
+  }
 }

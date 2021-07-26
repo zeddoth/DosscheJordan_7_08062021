@@ -148,3 +148,63 @@
 .blue-button:hover {
   background-color: #5ec9ff;
 }
+
+@media screen and (max-width: 1280px) {
+  .edit_box-row {
+    flex-direction: column;
+  }
+  .edit_box_profileImage {
+    width: 100%;
+    margin-bottom: 50px;
+  }
+  .edit_box_password {
+    width: 100%;
+  }
+  .edit_box_infos {
+    width: 100%;
+  }
+  .edit_box_buttons {
+    flex-direction: column;
+    row-gap: 20px;
+    height: 100%;
+  }
+  .button {
+    height: 60px;
+  }
+}
+@media screen and (max-width: 800px) {
+  .edit_box-row {
+    flex-direction: column;
+  }
+  .edit_box {
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 150px;
+    padding: 15px;
+  }
+  .edit_box_profileImage {
+    width: 100%;
+    margin-bottom: 50px;
+  }
+  .edit_box_profileImage_srcImg {
+    height: 150px;
+    width: 150px;
+  }
+  .edit_box_password {
+    width: 100%;
+  }
+  .edit_box_infos {
+    width: 100%;
+  }
+  .edit_box_buttons {
+    flex-direction: column;
+    row-gap: 20px;
+    height: 100%;
+  }
+  .button {
+    height: 60px;
+  }
+  .send-img {
+    right: -15px;
+  }
+}

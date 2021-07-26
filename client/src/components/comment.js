@@ -7,6 +7,9 @@ import "../styles/comment.css";
 const Comment = ({ commentContent, rolesCurrentUser, remove }) => {
   const token = JSON.parse(localStorage.getItem("token")).value;
   const UserId = JSON.parse(localStorage.getItem("userId")).value;
+  const profileImgRoute = commentContent.User.profileImage
+    ? commentContent.User.profileImage
+    : require("../styles/medias/defaultProfile.png").default;
   const deleteComment = async () => {
     try {
       await remove(commentContent.id);
@@ -57,11 +60,7 @@ const Comment = ({ commentContent, rolesCurrentUser, remove }) => {
     <>
       <div className="comment_box_content fade-in-fwd">
         <div className="comment_box_content-img">
-          <img
-            className="comment_box_content-img-profileimg"
-            src={commentContent.User.profileImage}
-            alt="avatar de zeddoth"
-          ></img>
+          <img className="comment_box_content-img-profileimg" src={profileImgRoute} alt="avatar de zeddoth"></img>
         </div>
         <div className="comment_box_content-comment">
           <div className="comment_box_content-text">
