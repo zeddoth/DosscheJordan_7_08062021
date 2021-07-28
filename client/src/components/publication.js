@@ -1,12 +1,12 @@
 import axios from "axios";
 import React, { useState } from "react";
-import { Link, Redirect } from "react-router-dom";
+import { Link } from "react-router-dom";
 import "../styles/publication.css";
 import Moment from "react-moment";
 import "moment/locale/fr";
 import { useHistory, useParams } from "react-router";
 
-const Publication = ({ post, remove, rolesCurrentUser, userConnected }) => {
+const Publication = ({ post, remove, rolesCurrentUser, userConnected, comment }) => {
   const profileImgRoute = post.User.profileImage
     ? post.User.profileImage
     : require("../styles/medias/defaultProfile.png").default;
@@ -174,12 +174,21 @@ const Publication = ({ post, remove, rolesCurrentUser, userConnected }) => {
           </div>
           <div className="publication_date">
             <p className="publication_date_publication">
-              Publié par {post.User.username} <Moment fromNow>{post.createdAt}</Moment>
+              Publié par{" "}
+              <Link
+                to={{ pathname: `/profile?id=${post.UserId}`, state: { post, userConnected } }}
+                onClick={() => {
+                  window.location.href = `/profile?id=${post.UserId}`;
+                }}
+              >
+                {post.User.username}
+              </Link>{" "}
+              <Moment fromNow>{post.createdAt}</Moment>
             </p>
           </div>
           <div className="publication_content">
             <hr></hr>
-            <Link to={{ pathname: `/publication?id=${post.id}`, state: { post, userConnected } }}>
+            <Link to={{ pathname: `/publication?id=${post.id}`, state: { post, userConnected, comment } }}>
               <h2>{post.title}</h2>
             </Link>
             <p>{post.content}</p>
@@ -192,9 +201,9 @@ const Publication = ({ post, remove, rolesCurrentUser, userConnected }) => {
             <span className="number">{like}</span>
             {dislikeStatus()}
             <span className="number">{dislike}</span>
-            <Link to={{ pathname: `/publication?id=${post.id}`, state: { post, userConnected } }}>
+            <Link to={{ pathname: `/publication?id=${post.id}`, state: { post, userConnected, comment } }}>
               <i className="fas fa-comments icon blue"></i>
-              <span className="number">{post.comment} Commentaires</span>
+              <span className="number">{comment ?? post.comment} Commentaires</span>
             </Link>
           </div>
           {isAdminForDelete()}

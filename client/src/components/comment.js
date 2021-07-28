@@ -1,10 +1,11 @@
 import React from "react";
 import axios from "axios";
 import Moment from "react-moment";
+import { Link } from "react-router-dom";
 import "moment/locale/fr";
 import "../styles/comment.css";
 
-const Comment = ({ commentContent, rolesCurrentUser, remove }) => {
+const Comment = ({ commentContent, rolesCurrentUser, remove, post, userConnected }) => {
   const token = JSON.parse(localStorage.getItem("token")).value;
   const UserId = JSON.parse(localStorage.getItem("userId")).value;
   const profileImgRoute = commentContent.User.profileImage
@@ -60,7 +61,14 @@ const Comment = ({ commentContent, rolesCurrentUser, remove }) => {
     <>
       <div className="comment_box_content fade-in-fwd">
         <div className="comment_box_content-img">
-          <img className="comment_box_content-img-profileimg" src={profileImgRoute} alt="avatar de zeddoth"></img>
+          <Link
+            to={{ pathname: `/profile?id=${commentContent.UserId}`, state: { post, userConnected, commentContent } }}
+            onClick={() => {
+              window.location.href = `/profile?id=${commentContent.UserId}`;
+            }}
+          >
+            <img className="comment_box_content-img-profileimg" src={profileImgRoute} alt="avatar de zeddoth"></img>
+          </Link>
         </div>
         <div className="comment_box_content-comment">
           <div className="comment_box_content-text">

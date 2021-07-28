@@ -54,16 +54,12 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   Publications.associate = (models) => {
+    Publications.hasMany(models.Comments, { onDelete: "CASCADE", hooks: true });
+    Publications.hasMany(models.PublicationsLikes, { onDelete: "CASCADE", hooks: true });
     Publications.belongsTo(models.Users, {
       foreignKey: {
         allowNull: true,
       },
-    });
-    Publications.hasMany(models.Comments, {
-      onDelete: "cascade",
-    });
-    Publications.hasMany(models.PublicationsLikes, {
-      onDelete: "cascade",
     });
   };
 

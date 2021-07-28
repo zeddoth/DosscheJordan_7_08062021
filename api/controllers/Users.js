@@ -73,27 +73,50 @@ exports.login = (req, res) => {
 };
 
 // Ont supprime l'utilisateur par son ID
-exports.deleteUser = (req, res) => {
-  db.Users.destroy({
-    where: { id: getIdUser(req) },
-  })
-    .then((num) => {
-      if (num == 1) {
+exports.deleteUser = async (req, res) => {
+  const paramsId = req.params.id;
+  const user = await db.Users.findByPk(getIdUser(req));
+  const profileImage = user.profileImage;
+  const destroyUser = () => {
+    db.Users.destroy({
+      where: { id: getIdUser(req) },
+    })
+      .then(() => {
         res.status(200).send({
           message: "L'utilisateur à été supprimer avec succès!",
         });
-      } else {
-        res.status(404).send({
-          message:
-            "L'utilisateur avec l'id= " + paramsId + " n'a pas plus être supprimer, peut être qu'il n'existe pas",
+      })
+      .catch(() => {
+        res.status(500).send({
+          message: "L'utilisateur avec l'id=" + paramsId + "n'a pas plus être supprimer",
         });
-      }
-    })
-    .catch(() => {
-      res.status(500).send({
-        message: "L'utilisateur avec l'id=" + paramsId + "n'a pas plus être supprimer",
+      });
+  };
+  const destroyPublications = () => {
+    db.Publications.findAll({ where: { UserId: getIdUser(req) } }).then((data) => {
+      data.forEach((element) => {
+        if (element.dataValues.attachment === null) {
+          db.Publications.destroy({ where: { UserId: getIdUser(req) } });
+          console.log("Publication supprimer sans fichier !");
+        } else {
+          fs.unlink(`uploads/${element.dataValues.attachment.split("/uploads/")[1]}`, () => {
+            db.Publications.destroy({ where: { UserId: getIdUser(req) } });
+            console.log("Publication supprimer avec un fichier !");
+          });
+        }
       });
     });
+  };
+  destroyPublications();
+  await db.Comments.destroy({ where: { UserId: getIdUser(req) } });
+  await db.PublicationsLikes.destroy({ where: { UserId: getIdUser(req) } });
+  if (profileImage === null) {
+    destroyUser();
+  } else {
+    fs.unlink(`uploads/profileImage/${user.profileImage.split("/uploads/profileImage")[1]}`, () => {
+      destroyUser();
+    });
+  }
 };
 
 // Ont complète le profile par son ID
@@ -135,6 +158,7 @@ exports.editPassword = (req, res) => {
 // Ont modifie l'image de profile de l'utilisateur
 exports.editProfileImage = async (req, res) => {
   const user = await db.Users.findByPk(getIdUser(req));
+  const filename = user.profileImage;
   const updateProfileImage = () => {
     db.Users.update(
       {
@@ -153,19 +177,11 @@ exports.editProfileImage = async (req, res) => {
         res.status(500).send({ message: "Une erreur à été rencontré lors de la requête" });
       });
   };
-  const filename = () => {
-    {
-      if (filename === null) {
-        return;
-      } else {
-        user.profileImage.split("/uploads/profileImage")[1];
-      }
-    }
-  };
+
   if (filename === null) {
     updateProfileImage();
   } else {
-    fs.unlink(`uploads/profileImage/${filename}`, () => {
+    fs.unlink(`uploads/profileImage/${user.profileImage.split("/uploads/profileImage")[1]}`, () => {
       updateProfileImage();
     });
   }

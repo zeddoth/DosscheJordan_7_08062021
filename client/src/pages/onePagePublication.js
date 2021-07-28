@@ -10,8 +10,10 @@ const OnePagePublication = () => {
   const post = useLocation().state.post;
   const userConnected = useLocation().state.userConnected;
   const [comments, setComments] = useState([]);
+  const [comment, setComment] = useState(post.comment);
   const removeComments = (commentId) => {
     setComments(comments.filter((p) => p.id !== commentId));
+    setComment(comments.length - 1);
   };
   useEffect(() => {
     const token = JSON.parse(localStorage.getItem("token")).value;
@@ -35,8 +37,19 @@ const OnePagePublication = () => {
     <>
       <Navbar userConnected={userConnected} />
       <div className="one-publication">
-        <Publication post={post} rolesCurrentUser={userConnected.roles} userConnected={userConnected} />
-        <WriteComment user={userConnected} post={post} setComments={setComments} comments={comments} />
+        <Publication
+          post={post}
+          rolesCurrentUser={userConnected.roles}
+          userConnected={userConnected}
+          comment={comment}
+        />
+        <WriteComment
+          user={userConnected}
+          post={post}
+          setComments={setComments}
+          setComment={setComment}
+          comments={comments}
+        />
         <div className="comment_box">
           {comments.map((commentContent) => {
             return (
@@ -46,6 +59,8 @@ const OnePagePublication = () => {
                 commentContent={commentContent}
                 userConnected={userConnected}
                 remove={removeComments}
+                post={post}
+                userConnected={userConnected}
               />
             );
           })}

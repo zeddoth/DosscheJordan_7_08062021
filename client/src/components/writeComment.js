@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import "../styles/writeComment.css";
 
-const WriteComment = ({ post, setComments, comments, user }) => {
+const WriteComment = ({ post, setComments, comments, user, setComment }) => {
   const token = JSON.parse(localStorage.getItem("token")).value;
   const [commentInput, setCommentInput] = useState("");
   const profileImgRoute = user.profileImage
@@ -10,6 +10,12 @@ const WriteComment = ({ post, setComments, comments, user }) => {
     : require("../styles/medias/defaultProfile.png").default;
   const postComment = (e) => {
     e.preventDefault();
+    if (commentInput.trim() === "") {
+      return false;
+    }
+    if (commentInput.trim().length < 3) {
+      return false;
+    }
     axios
       .post(
         `http://localhost:8080/api/comments/${post.id}`,
@@ -26,6 +32,7 @@ const WriteComment = ({ post, setComments, comments, user }) => {
         const finalData = { ...commentData, User };
         console.log(finalData);
         setComments([finalData, ...comments]);
+        setComment([finalData, ...comments].length);
         setCommentInput("");
       })
       .catch((error) => {

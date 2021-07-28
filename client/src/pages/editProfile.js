@@ -46,6 +46,10 @@ const EditProfile = () => {
       });
   };
   const editPassword = async () => {
+    if (password != rePassword) {
+      setWarning("Les mot de passes ne correspondent pas");
+      return false;
+    }
     await axios
       .put(`http://localhost:8080/api/profile/${userId}/password`, dataPassword, {
         headers: {
@@ -63,6 +67,10 @@ const EditProfile = () => {
       });
   };
   const editImage = async () => {
+    if (profileImage === null) {
+      setWarning("Veuillez inserez une image de profil");
+      return false;
+    }
     await axios
       .put(`http://localhost:8080/api/profile/${userId}/image`, dataImage, {
         headers: {
