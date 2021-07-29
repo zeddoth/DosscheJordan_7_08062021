@@ -140,6 +140,7 @@ exports.deleteOnePublication = async (req, res) => {
     const paramsId = req.params.id;
     const post = await db.Publications.findByPk(paramsId);
     const deletePublication = () => {
+      db.Comments.destroy({ where: { PublicationId: paramsId }, UserId: getIdUser(req) });
       db.Publications.destroy({
         where: { id: paramsId },
         UserId: getIdUser(req),
