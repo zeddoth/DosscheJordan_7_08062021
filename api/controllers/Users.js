@@ -5,6 +5,7 @@ const fs = require("fs");
 require("dotenv").config();
 const randomToken = process.env.TOKEN;
 const getIdUser = require("../utils/decodeToken");
+const { get } = require("http");
 
 // Ont enregistre un compte
 exports.signup = (req, res) => {
@@ -76,7 +77,30 @@ exports.login = (req, res) => {
 exports.deleteUser = async (req, res) => {
   const paramsId = req.params.id;
   const user = await db.Users.findByPk(getIdUser(req));
+  const likeOrDislike = await db.PublicationsLikes.findAll({ where: { UserId: getIdUser(req) } });
+  const comments = await db.Comments.findAll({ where: { UserId: getIdUser(req) } });
   const profileImage = user.profileImage;
+  const likeToDelete = [];
+  const dislikeToDelete = [];
+  // nettoyage des publications des autres utilisateurs
+  comments.forEach((element) => {
+    db.Publications.decrement({ comment: 1 }, { where: { id: element.dataValues.PublicationId } });
+  });
+  likeOrDislike.forEach((element) => {
+    if (element.dataValues.state === "liked") {
+      likeToDelete.push(element.dataValues.PublicationId);
+    }
+    if (element.dataValues.state === "disliked") {
+      dislikeToDelete.push(element.dataValues.PublicationId);
+    }
+  });
+  dislikeToDelete.forEach((element) => {
+    db.Publications.decrement({ dislike: 1 }, { where: { id: element } });
+  });
+  likeToDelete.forEach((element) => {
+    db.Publications.decrement({ like: 1 }, { where: { id: element } });
+  });
+
   const destroyUser = () => {
     db.Users.destroy({
       where: { id: getIdUser(req) },
@@ -155,6 +179,7 @@ exports.editPassword = (req, res) => {
       res.status(500).send({ message: "Une erreur à été rencontré lors de la modification du mot de passe" });
     });
 };
+
 // Ont modifie l'image de profile de l'utilisateur
 exports.editProfileImage = async (req, res) => {
   const user = await db.Users.findByPk(getIdUser(req));
@@ -186,6 +211,7 @@ exports.editProfileImage = async (req, res) => {
     });
   }
 };
+
 // Ont récupère les information du profile par son ID
 exports.getUser = (req, res) => {
   const paramsId = req.params.id;
@@ -200,6 +226,7 @@ exports.getUser = (req, res) => {
     });
 };
 
+// Ont récupère les information des profils
 exports.getAllUsers = (req, res) => {
   db.Users.findAll({
     order: [["username", "DESC"]],

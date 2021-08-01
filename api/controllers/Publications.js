@@ -262,7 +262,6 @@ exports.dislikePublication = async (req, res) => {
 };
 
 // ADMIN
-
 // Ont supprime une publication par son ID
 exports.AdminDeleteOnePublication = async (req, res) => {
   try {
