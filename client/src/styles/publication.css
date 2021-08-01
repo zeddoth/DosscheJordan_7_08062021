@@ -54,7 +54,7 @@ h2 {
   border: #c2c2c2 solid 1px;
 }
 .publication_date_publication {
-  font-size: 10px;
+  font-size: 12px;
 }
 .publication_like_comments {
   height: 25px;
@@ -77,6 +77,7 @@ h2 {
 .publication_image_src {
   width: 100%;
   max-height: 500px;
+  /* height: 500px; */
   object-fit: cover;
   border-radius: 10px;
 }

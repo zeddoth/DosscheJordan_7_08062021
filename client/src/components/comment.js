@@ -73,7 +73,7 @@ const Comment = ({ commentContent, rolesCurrentUser, remove, post, userConnected
         <div className="comment_box_content-comment">
           <div className="comment_box_content-text">
             <div className="comment_box_content-text_author">
-              <h4>{commentContent.User.username}</h4>
+              <h3>{commentContent.User.username}</h3>
               <p className="mini">
                 Publié <Moment fromNow>{commentContent.createdAt}</Moment>
               </p>

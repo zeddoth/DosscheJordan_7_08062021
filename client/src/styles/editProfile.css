@@ -23,7 +23,8 @@
   flex-direction: column;
   width: 410px;
 }
-.edit_box_profileImage p {
+.edit_box_profileImage h2 {
+  font-weight: normal;
   font-size: 25px;
   margin-bottom: 35px;
 }
@@ -116,7 +117,9 @@
   column-gap: 30px;
   justify-content: flex-end;
 }
-
+.hidden {
+  display: none;
+}
 .button {
   transition: 0.3s;
   cursor: pointer;

@@ -17,7 +17,9 @@ const Navbar = ({ userConnected }) => {
     <>
       <div className="navbar">
         <div className="navbar_logo">
-          <img className="navbar_logo-only" src={logo} alt="Logo Groupomania" />
+          <h1>
+            <img className="navbar_logo-only" src={logo} alt="Logo Groupomania" />
+          </h1>
         </div>
         <div className="navbar_end">
           <div className="navbar_button_box">

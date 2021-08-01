@@ -46,7 +46,7 @@ const EditProfile = () => {
       });
   };
   const editPassword = async () => {
-    if (password != rePassword) {
+    if (password !== rePassword) {
       setWarning("Les mot de passes ne correspondent pas");
       return false;
     }
@@ -120,21 +120,33 @@ const EditProfile = () => {
       <div className="edit_box column">
         <div className="edit_box-row">
           <div className="edit_box_profileImage">
-            <p>Image de profil :</p>
+            <h2>Image de profil :</h2>
             <div className="edit_box_profileImage_src">
-              <img className="edit_box_profileImage_srcImg" src={profileImgRoute} alt="DJO"></img>
-              <label forhtml="file">
-                <i className="fas fa-plus-circle big send-img">
-                  <input
-                    id="file"
-                    type="file"
-                    className="invisible"
-                    accept=".jpg, .jpeg, .png, .gif, .bmp"
-                    onChange={(e) => setProfileImage(e.target.files[0])}
-                  />
-                </i>
+              <img
+                className="edit_box_profileImage_srcImg"
+                src={profileImgRoute}
+                alt={`Avatar de ${user.username}`}
+              ></img>
+              <label className="hidden" role="button" htmlFor="file" title="Ajouter un fichier">
+                fichier
               </label>
-              <i className="fas fa-check-circle big valid-img" onClick={editImage}></i>
+
+              <i tabIndex="0" arialabel="Modifier votre image de profil" className="fas fa-plus-circle big send-img">
+                <input
+                  id="file"
+                  type="file"
+                  name="file"
+                  className="invisible"
+                  accept=".jpg, .jpeg, .png, .gif, .bmp"
+                  onChange={(e) => setProfileImage(e.target.files[0])}
+                />
+              </i>
+              <i
+                tabIndex="0"
+                arialabel="Envoyer votre image de profil"
+                className="fas fa-check-circle big valid-img"
+                onClick={editImage}
+              ></i>
             </div>
           </div>
           <div className="edit_box_password">
@@ -145,7 +157,7 @@ const EditProfile = () => {
               </p>
             </div>
             <div className="edit_box_password_input column">
-              <label forhtml="password" className="labelbox">
+              <label htmlFor="password" className="labelbox" title="Nouveau mot de passe">
                 <i className="fas fa-lock margin15"></i>Nouveau mot de passe :
               </label>
               <input
@@ -159,7 +171,7 @@ const EditProfile = () => {
               />
             </div>
             <div className="edit_box_password_input column">
-              <label forhtml="rePassword" className="labelbox">
+              <label htmlFor="rePassword" className="labelbox" title="Confirmer le mot de passe">
                 <i className="fas fa-lock margin15"></i>Confirmer le mot de passe :
               </label>
               <input
@@ -175,7 +187,7 @@ const EditProfile = () => {
           </div>
           <div className="edit_box_infos">
             <div className="edit_box_infos_input column">
-              <label forhtml="firstname" className="labelbox">
+              <label htmlFor="firstname" className="labelbox" title="Prénom">
                 <i className="fas fa-user margin15"></i>Prénom :
               </label>
               <input
@@ -188,7 +200,7 @@ const EditProfile = () => {
               />
             </div>
             <div className="edit_box_infos_input column">
-              <label forhtml="lastname" className="labelbox">
+              <label htmlFor="lastname" className="labelbox" title="Nom">
                 <i className="fas fa-user margin15"></i>Nom :
               </label>
               <input
@@ -201,7 +213,7 @@ const EditProfile = () => {
               />
             </div>
             <div className="edit_box_infos_input column">
-              <label forhtml="job" className="labelbox">
+              <label htmlFor="job" className="labelbox" title="Profession">
                 <i className="fas fa-briefcase margin15"></i>Profession :
               </label>
               <input

@@ -65,16 +65,11 @@ const Signup = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
-              <label htmlFor="password">
+              <label htmlFor="repassword">
                 <img className="form_box_input_svg" src={lock} alt="lock" />
                 Confirmer le mot de passe :
               </label>
-              <input
-                autoComplete="current-password"
-                id="password"
-                className="input"
-                type="password"
-              />
+              <input autoComplete="current-password" id="repassword" className="input" type="password" />
 
               {errorMessage ? (
                 <p className="errorMessage">

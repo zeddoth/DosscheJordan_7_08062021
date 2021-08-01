@@ -17,7 +17,7 @@
   justify-content: center;
   margin-top: 20px;
   margin-bottom: 10px;
-  /* width: 100% */
+  width: 100%;
 }
 .publication_comments_create_box-img {
   display: flex;
@@ -56,7 +56,7 @@
   border-radius: 10px;
   background-color: #e4e4e4;
   border: 1px solid rgba(0, 0, 0, 0.1);
-  z-index: 1;
+  z-index: 0;
 }
 .publication_comments_create_button:hover {
   background-color: #b4b4b4;
@@ -71,7 +71,9 @@
   box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.16);
   border-radius: 10px;
 }
-
+.hidden {
+  display: none;
+}
 @media screen and (max-width: 800px) {
   .publication_comments {
     margin-left: 0;

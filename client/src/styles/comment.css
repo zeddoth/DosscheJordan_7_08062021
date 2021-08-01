@@ -35,13 +35,16 @@
   align-items: center;
   margin-bottom: 5px;
 }
+.comment_box_content-text_author h3 {
+  font-size: 16px;
+}
 .comment_box_content-comment {
   display: flex;
   align-items: center;
 }
 .mini {
   margin-left: 1em;
-  font-size: 10px;
+  font-size: 12px;
 }
 .comment_box_content-delete {
   transition: 0.3s;

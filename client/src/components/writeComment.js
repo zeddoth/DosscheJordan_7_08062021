@@ -50,8 +50,13 @@ const WriteComment = ({ post, setComments, comments, user, setComment }) => {
               alt={`Avatar de  ${user.username}`}
             ></img>
           </div>
+          <label className="hidden" htmlFor="writecomment" aria-hidden="true">
+            commentaire
+          </label>
           <input
             type="text"
+            id="writecomment"
+            name="writecomment"
             className="publication_comments_create_input"
             placeholder="Écrivez un commentaire…"
             required
