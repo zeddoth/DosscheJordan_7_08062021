@@ -127,20 +127,19 @@ const EditProfile = () => {
                 src={profileImgRoute}
                 alt={`Avatar de ${user.username}`}
               ></img>
-              <label className="hidden" role="button" htmlFor="file" title="Ajouter un fichier">
-                fichier
+              <label role="button" htmlFor="file" title="Ajouter un fichier" name="file">
+                <p className="hidden">Fichier</p>
+                <i className="fas fa-plus-circle big send-img">
+                  <input
+                    id="file"
+                    type="file"
+                    name="file"
+                    className="invisible"
+                    accept=".jpg, .jpeg, .png, .gif, .bmp"
+                    onChange={(e) => setProfileImage(e.target.files[0])}
+                  />
+                </i>
               </label>
-
-              <i tabIndex="0" arialabel="Modifier votre image de profil" className="fas fa-plus-circle big send-img">
-                <input
-                  id="file"
-                  type="file"
-                  name="file"
-                  className="invisible"
-                  accept=".jpg, .jpeg, .png, .gif, .bmp"
-                  onChange={(e) => setProfileImage(e.target.files[0])}
-                />
-              </i>
               <i
                 tabIndex="0"
                 arialabel="Envoyer votre image de profil"

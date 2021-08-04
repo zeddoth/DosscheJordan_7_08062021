@@ -118,7 +118,7 @@
   justify-content: flex-end;
 }
 .hidden {
-  display: none;
+  color: black;
 }
 .button {
   transition: 0.3s;
